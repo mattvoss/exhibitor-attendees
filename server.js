@@ -131,7 +131,7 @@ app.configure('production', function(){
     Serve the site skeleton HTML to start the app
 =============================================================== */
 
-var port = ("port" in config) ? config.port : 3001;
+var port = (config.get("port")) ? config.get("port") : 3001;
 if ("ssl" in config) {
     var server = app.https(opts).io();
 } else {
