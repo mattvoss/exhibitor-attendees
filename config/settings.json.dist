@@ -1,33 +1,27 @@
 {
-    "postgres":{
-        "cartodb": {
-          "host"     : "localhost",
-          "username" : "username",
-          "password" : "password",
-          "database" : "database"
-        },
-        "user": {
-          "host"     : "localhost",
-          "username" : "username",
-          "password" : "password",
-          "database" : "database"
-        },
-        "politkz": {
-          "host"     : "localhost",
-          "username" : "username",
-          "password" : "password",
-          "database" : "database"
-        }
+  "mysql": {
+    "checkin": {
+      "host": "hostname",
+      "username": "username",
+      "password": "password",
+      "database": "database name",
+      "port": 3306
     },
-    "port": 3001,
-    "prefix": "",
-    "cartodb": {
-      "host": "localhost"
+    "registration": {
+      "host": "hostname",
+      "username": "username",
+      "password": "password",
+      "database": "database name",
+      "port": 3306
     }
-    "redis": {
-        "host": "localhost",
-        "port": "6379",
-        "ttl": 43200,
-        "db": "database"
-    }
+  },
+  "port": 3001,
+  "prefix": "",
+  "redis": {
+    "host": "localhost",
+    "port": "6379",
+    "ttl": 43200,
+    "db": "dbname"
+  },
+  "uuid": "84a8873a-92d5-11e3-a3e0-2b963df5580f"
 }
