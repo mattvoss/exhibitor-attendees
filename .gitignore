@@ -1,0 +1,7 @@
+node_modules/
+lib/
+bower_components/
+vendors/
+config/config.json
+config/settings.json
+public/
