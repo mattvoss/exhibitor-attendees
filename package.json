@@ -9,7 +9,7 @@
     "node-uuid": "latest",
     "handlebars": "latest",
     "redis": "latest",
-    "connect-redis": "latest",
+    "connect-redis": "~1.4.7",
     "sequelize": "sequelize/sequelize",
     "commander": "latest",
     "swag": "latest",
