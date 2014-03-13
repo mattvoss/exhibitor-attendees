@@ -16,7 +16,7 @@ SELECT
        where  DATE_FORMAT(register_date, '%Y-%m-%d') <= dateRegistered AND (
               eventid = 9 OR eventid = 10)) as total
 FROM conf_dtregister_user
-WHERE eventid = 9 OR eventid = 1
+WHERE eventid = 9 OR eventid = 10
 GROUP BY dateRegistered ASC
 
 SELECT
