@@ -475,7 +475,7 @@ exports.authUser = function(req, res) {
         biller = biller.toJSON();
         createExhibitorModel(biller, sendBack);
       };
-  CheckinBiller.find({ where: { confirmNum: req.body.confirmation } }).success(function(biller) {
+  CheckinBiller.find({ where: { confirmNum: req.body.confirmation, status: { gte: 0 } } }).success(function(biller) {
     if (biller !== null) {
       CheckinBillerFieldValues.find({
         where: {
@@ -488,7 +488,7 @@ exports.authUser = function(req, res) {
         processExhibitor(biller);
       });
     } else {
-      RegBiller.find({ where: { confirmNum: req.body.confirmation } }).success(function(biller) {
+      RegBiller.find({ where: { confirmNum: req.body.confirmation, status: { gte: 0 } } }).success(function(biller) {
         if (biller !== null) {
 
           RegBillerFieldValues.find({
