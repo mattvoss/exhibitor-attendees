@@ -3,7 +3,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
   // User Model
   // ----------
 
-  Models.states = _.extend({false: 'Please select a state'}, Data.states);
+  Models.states = _.extend({'false': 'Please select a state'}, Data.states);
 
   Models.Attendee = Backbone.SuperModel.extend({
     url: function() {
