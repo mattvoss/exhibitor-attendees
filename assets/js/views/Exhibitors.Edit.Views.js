@@ -80,7 +80,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
       },
 
       onShow: function(e) {
-        $(".panel-collapse:first", this.$el).addClass("in");
+        //$(".panel-collapse:first", this.$el).addClass("in");
       }
 
   });
