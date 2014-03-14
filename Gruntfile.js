@@ -53,7 +53,8 @@ module.exports = function(grunt) {
             'lib/spin.js/spin.js',
             'lib/ladda-bootstrap/ladda.js',
             'lib/moment/moment.js',
-            'lib/jQuery-Mask-Plugin/jquery.mask.min.js'
+            'lib/jQuery-Mask-Plugin/jquery.mask.min.js',
+            'lib/placeholders/build/placeholders.js'
           ]
         }
       },
@@ -128,7 +129,8 @@ module.exports = function(grunt) {
           'lib/spin.js/spin.js',
           'lib/ladda-bootstrap/ladda.js',
           'lib/moment/moment.js',
-          'lib/jQuery-Mask-Plugin/jquery.mask.min.js'
+          'lib/jQuery-Mask-Plugin/jquery.mask.min.js',
+          'lib/placeholders/build/placeholders.js'
         ],
         dest: 'public/js/vendors.min.js',
       },

@@ -28,18 +28,18 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
     },
 
     schema: {
-      firstname:  { type: 'Text', validators: ['required'], editorClass: 'form-control' },
-      lastname:   { type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      firstname:  { title: 'First Name', type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      lastname:   { title: 'Last Name', type: 'Text', validators: ['required'], editorClass: 'form-control' },
       title:      { type: 'Text', validators: ['required'], editorClass: 'form-control' },
       organization: { type: 'Text', validators: ['required'], editorClass: 'form-control' },
-      address:    { type: 'Text', validators: ['required'], editorClass: 'form-control' },
-      address2:   { type: 'Text', editorClass: 'form-control' },
+      address:    { title: 'Street Address', type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      address2:   { title: 'Street Address 2', type: 'Text', editorClass: 'form-control' },
       city:       { type: 'Text', validators: ['required'], editorClass: 'form-control' },
       state:      { type: 'Select', options: Models.states, validators: ['required'], editorClass: 'form-control' },
       zip:        { type: 'Text', validators: ['required'], editorClass: 'form-control' },
       phone:      { type: 'Text', editorClass: 'form-control' },
       email:      { validators: ['required', 'email'], editorClass: 'form-control' },
-      siteId:     { type: 'Text', editorClass: 'form-control' },
+      siteId:     { title: 'Site ID - VPPPA Association Member Only', type: 'Text', editorClass: 'form-control' },
     },
 
     initialize: function() {

@@ -19,6 +19,7 @@
     "bootflat": "https://github.com/flathemes/bootflat.git",
     "jQuery-Mask-Plugin": "*",
     "bootstrap-jasny": "*",
-    "backbone.supermodel": "https://github.com/laoshanlung/backbone.supermodel.git"
+    "backbone.supermodel": "https://github.com/laoshanlung/backbone.supermodel.git",
+    "placeholders": "https://github.com/Spinarooni/Placeholders.js/archive/master.zip"
   }
 }
