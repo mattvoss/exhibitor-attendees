@@ -9,6 +9,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
     url: function() {
       return this.collection.exhibitor.url()+'/attendee';
     },
+    idAttribute: "id",
     defaults: {
       title: '',
       firstname: '',

@@ -54,7 +54,9 @@ module.exports = function(grunt) {
             'lib/ladda-bootstrap/ladda.js',
             'lib/moment/moment.js',
             'lib/jQuery-Mask-Plugin/jquery.mask.min.js',
-            'lib/placeholders/build/placeholders.js'
+            'lib/placeholders/build/placeholders.js',
+            'lib/messenger/messenger.js',
+            'lib/messenger/messenger-theme-future.js'
           ]
         }
       },
@@ -78,6 +80,8 @@ module.exports = function(grunt) {
             'lib/font-awesome/css/font-awesome.css',
             'lib/selectize/selectize.css',
             'lib/ladda-bootstrap/ladda-themeless.css',
+            'lib/messenger/messenger.css',
+            'lib/messenger/messenger-theme-future.css',
             'assets/css/custom.css'
           ]
         }
@@ -96,6 +100,8 @@ module.exports = function(grunt) {
           'lib/font-awesome/css/font-awesome.css',
           'lib/selectize/selectize.css',
           'lib/ladda-bootstrap/ladda-themeless.css',
+          'lib/messenger/messenger.css',
+          'lib/messenger/messenger-theme-future.css',
           'assets/css/custom.css'
         ],
         dest: 'public/css/app.css',
@@ -130,7 +136,10 @@ module.exports = function(grunt) {
           'lib/ladda-bootstrap/ladda.js',
           'lib/moment/moment.js',
           'lib/jQuery-Mask-Plugin/jquery.mask.min.js',
-          'lib/placeholders/build/placeholders.js'
+          'lib/placeholders/build/placeholders.js',
+          'bower_components/ie-alert/theplugin/iealert.js',
+          'lib/messenger/messenger.js',
+          'lib/messenger/messenger-theme-future.js'
         ],
         dest: 'public/js/vendors.min.js',
       },

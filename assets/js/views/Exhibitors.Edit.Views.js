@@ -37,6 +37,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
         }
         this.$el.on('show.bs.collapse', function () {
           $("i.fa-plus-circle", $(this)).removeClass('fa-plus-circle').addClass('fa-minus-circle');
+          $('html,body').animate({'scrollTop':$('.fa-minus-circle').position().top},500);
         });
         this.$el.on('hide.bs.collapse', function () {
           $("i.fa-minus-circle", $(this)).removeClass('fa-minus-circle').addClass('fa-plus-circle');
@@ -46,18 +47,25 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
       updateAttendee: function(e) {
         var view = this;
         if (typeof this.form.commit() === 'undefined') {
+          $(".update", this.$el).attr("disabled", "disabled");
           this.model.save(
             {},
             {
               success: function(model, response, options) {
+                var firstname = model.get("firstname"),
+                    lastname = model.get("lastname");
 
+                Messenger().post("Exhibitor Attendee ["+lastname+", "+firstname+"] has been updated.");
+                $(".update", view.$el).removeAttr("disabled");
               },
               error: function(model, xhr, options) {
                 if (view.$el.find('.alert').length > 0) view.$el.find('.alert').remove();
                 view.$el.find('.page-header').before('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>There has been a error trying to create this race. This is what the server told me: <strong>'+xhr.responseJSON.messsage.detail+'</strong></div>');
+                $(".update", view.$el).removeAttr("disabled");
                 $('html, body').animate({
                   scrollTop: $(".alert-dismissable").offset().top-70
                 }, 2000);
+
               }
             }
           );

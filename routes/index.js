@@ -79,7 +79,7 @@ exports.initialize = function() {
     });
 
     CheckinMemberFieldValues = db.checkin.define('member_field_values', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       local_id:             { type: Sequelize.INTEGER },
       event_id:             { type: Sequelize.STRING(36) },
       field_id:             { type: Sequelize.INTEGER },
@@ -88,14 +88,14 @@ exports.initialize = function() {
     });
 
     RegMemberFieldValues = db.registration.define('exhib_dtregister_member_field_values', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       field_id:             { type: Sequelize.INTEGER },
       member_id:            { type: Sequelize.INTEGER },
       value:                { type: Sequelize.TEXT }
     });
 
     CheckinGroupMembers = db.checkin.define('group_members', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       groupMemberId :       { type: Sequelize.INTEGER },
       event_id :            { type: Sequelize.STRING(36) },
       groupUserId :         { type: Sequelize.INTEGER },
@@ -117,7 +117,7 @@ exports.initialize = function() {
     });
 
     CheckinEventFields = db.checkin.define('event_fields', {
-      id:             { type: Sequelize.INTEGER, primaryKey: true },
+      id:             { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       local_id :       { type: Sequelize.INTEGER },
       event_id :       { type: Sequelize.STRING(36) },
       field_id :       { type: Sequelize.INTEGER },
@@ -172,7 +172,7 @@ exports.initialize = function() {
     });
 
     CheckinBiller = db.checkin.define('biller', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       userId :              { type: Sequelize.INTEGER },
       eventId :             { type: Sequelize.STRING(36) },
       local_eventId :       { type: Sequelize.INTEGER },
@@ -232,7 +232,7 @@ exports.initialize = function() {
     });
 
     CheckinEventFees = db.checkin.define('event_fees', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       local_id :            { type: Sequelize.INTEGER },
       event_id :            { type: Sequelize.STRING(36) },
       user_id :             { type: Sequelize.INTEGER },
@@ -254,7 +254,7 @@ exports.initialize = function() {
     });
 
     RegEventFees = db.registration.define('exhib_dtregister_fee', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       user_id :             { type: Sequelize.INTEGER },
       basefee :             { type: Sequelize.STRING(20) },
       memberdiscount :      { type: Sequelize.STRING(12) },
@@ -274,7 +274,7 @@ exports.initialize = function() {
     });
 
     CheckinBillerFieldValues = db.checkin.define('biller_field_values', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       local_id :            { type: Sequelize.INTEGER },
       event_id :            { type: Sequelize.STRING(36) },
       field_id :            { type: Sequelize.INTEGER },
@@ -283,21 +283,21 @@ exports.initialize = function() {
     });
 
     RegBillerFieldValues = db.registration.define('exhib_dtregister_user_field_values', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       field_id :            { type: Sequelize.INTEGER },
       user_id :             { type: Sequelize.INTEGER },
       value :               { type: Sequelize.TEXT }
     });
 
     CheckinExhibitorAttendeeNumber = db.checkin.define('exhibitorAttendeeNumber', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       userId :              { type: Sequelize.INTEGER },
       eventId :             { type: Sequelize.STRING(255) },
       attendees :           { type: Sequelize.INTEGER }
     });
 
     CheckinExhibitorAttendees = db.checkin.define('exhibitorAttendees', {
-      id:                   { type: Sequelize.INTEGER, primaryKey: true },
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       userId :              { type: Sequelize.INTEGER },
       eventId :             { type: Sequelize.STRING(36) },
       firstname :           { type: Sequelize.STRING(255) },
@@ -550,26 +550,34 @@ exports.getBoothSize = function(req, res) {
 };
 
 exports.addAttendee = function(req, res) {
+  var vals = [
+        'userId',
+        'eventId',
+        'firstname',
+        'lastname',
+        'address',
+        'address2',
+        'city',
+        'state',
+        'zip',
+        'email',
+        'phone',
+        'title',
+        'organization',
+        'siteId',
+        'created'
+      ],
+      results = {};
+  Object.keys(req.body).forEach(function(key) {
+    if (vals.indexOf(key) >= 0) {
+      results[key] = req.body[key];
+    }
+  });
+
   CheckinExhibitorAttendees.create(
-    req.body,
-    [
-      'userId',
-      'eventId',
-      'firstname',
-      'lastname',
-      'address',
-      'address2',
-      'city',
-      'state',
-      'zip',
-      'email',
-      'phone',
-      'title',
-      'organization',
-      'siteId',
-      'created'
-    ]
+    results
   ).success(function(attendee) {
+    console.log(attendee);
     createExhibitorModel(req.session.user, function(exhibitor) {
       req.session.user = exhibitor;
       res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
@@ -604,6 +612,7 @@ exports.updateAttendee = function(req, res) {
         'siteId'
       ]
     ).success(function(attendee) {
+      console.log(attendee);
       createExhibitorModel(req.session.user, function(exhibitor) {
         req.session.user = exhibitor;
         res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');

@@ -7,7 +7,7 @@
     "underscore": "*",
     "marionette": "*",
     "backbone.wreqr": "*",
-    "backbone.babysitter": "*",
+    "backbone.babysitter": "https://github.com/marionettejs/backbone.babysitter.git",
     "backbone.marionette.handlebars": "https://github.com/asciidisco/Backbone.Marionette.Handlebars.git",
     "json2": "*",
     "font-awesome": "*",
@@ -20,6 +20,8 @@
     "jQuery-Mask-Plugin": "*",
     "bootstrap-jasny": "*",
     "backbone.supermodel": "https://github.com/laoshanlung/backbone.supermodel.git",
-    "placeholders": "https://github.com/Spinarooni/Placeholders.js/archive/master.zip"
+    "placeholders": "https://github.com/Spinarooni/Placeholders.js/archive/master.zip",
+    "ie-alert": "*",
+    "messenger": "*"
   }
 }
