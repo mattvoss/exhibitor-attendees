@@ -36,11 +36,41 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
       address:    { title: 'Street Address', type: 'Text', validators: ['required'], editorClass: 'form-control' },
       address2:   { title: 'Street Address 2', type: 'Text', editorClass: 'form-control' },
       city:       { type: 'Text', validators: ['required'], editorClass: 'form-control' },
-      state:      { type: 'Select', options: Models.states, validators: ['required'], editorClass: 'form-control' },
+      state:      {
+        title: 'State/Province',
+        type: 'Select',
+        options: Models.states,
+        validators: ['required'],
+        editorClass: 'form-control'
+        validators: [
+            function checkDropDown(value, formValues) {
+                var err = {
+                    type: 'state',
+                    message: 'A state/province must be selected'
+                };
+
+                if (value === false) return err;
+            }
+        ]
+      },
       zip:        { type: 'Text', validators: ['required'], editorClass: 'form-control' },
       phone:      { type: 'Text', editorClass: 'form-control' },
       email:      { validators: ['required', 'email'], editorClass: 'form-control' },
-      siteId:     { title: 'Site ID - VPPPA Association Member Only', type: 'Text', editorClass: 'form-control' },
+      siteId:     {
+        title: 'Site ID - VPPPA Association Member Only',
+        type: 'Text',
+        editorClass: 'form-control',
+        validators: [
+            function checkSiteId(value, formValues) {
+                var err = {
+                    type: 'siteId',
+                    message: 'Site ID must be 6 digits and only numeric'
+                };
+
+                if (value.length > 0 && value.length !== 6 && !(/\D/.test(value))) return err;
+            }
+        ]
+      },
     },
 
     initialize: function() {
