@@ -34,7 +34,7 @@ Exhibitors.module('Public.Views', function(Views, App, Backbone, Marionette, $, 
       onInputKeypress: function(evt) {
         var ENTER_KEY = 13;
 
-        if (evt.which === ENTER_KEY && this.zipcode.val().length > 0) {
+        if (evt.which === ENTER_KEY && this.ui.zipcode.val().length > 0) {
           this.logIn(evt);
         }
       },
