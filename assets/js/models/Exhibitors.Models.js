@@ -59,6 +59,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
   Models.User = Backbone.SuperModel.extend({
     name: 'exhibitor',
     urlRoot: '/api/exhibitor',
+    idAttribute: "id",
     defaults: {
       zipcode: '',
       confirmation: ''

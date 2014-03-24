@@ -499,7 +499,7 @@ exports.authUser = function(req, res) {
             }
           }).success(function(billerFieldValues) {
             var callback = function(results) {
-                  processExhibitor(biller);
+                  processExhibitor(results);
                 };
             importExhibitor(biller, callback);
           });
@@ -737,6 +737,7 @@ var importExhibitor = function(billerInfo, cb) {
     }*/
   ],function(err, results) {
     CheckinBiller.find(results.biller.id).success(function(biller) {
+      console.log("biller found");
       cb(biller);
     });
   });
