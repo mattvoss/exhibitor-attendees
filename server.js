@@ -111,6 +111,9 @@ app.configure(function(){
     app.use('/images', express.static(__dirname + '/public/images', { maxAge: oneDay }));
     app.use('/img', express.static(__dirname + '/public/images', { maxAge: oneDay }));
     app.use('/fonts', express.static(__dirname + '/public/fonts', { maxAge: oneDay }));
+    app.use('/assets', express.static(__dirname + '/assets', { maxAge: oneDay }));
+    app.use('/lib', express.static(__dirname + '/lib', { maxAge: oneDay }));
+    app.use('/bower_components', express.static(__dirname + '/bower_components', { maxAge: oneDay }));
     app.use(app.router);
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });

@@ -736,7 +736,9 @@ var importExhibitor = function(billerInfo, cb) {
       });
     }*/
   ],function(err, results) {
-      cb(results);
+    CheckinBiller.find(results.biller.id).success(function(biller) {
+      cb(biller);
+    });
   });
 };
 
