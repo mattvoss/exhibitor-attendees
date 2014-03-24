@@ -40,9 +40,9 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
         title: 'State/Province',
         type: 'Select',
         options: Models.states,
-        validators: ['required'],
-        editorClass: 'form-control'
+        editorClass: 'form-control',
         validators: [
+            'required',
             function checkDropDown(value, formValues) {
                 var err = {
                     type: 'state',
