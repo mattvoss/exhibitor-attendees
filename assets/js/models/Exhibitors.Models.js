@@ -49,7 +49,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
                     message: 'A state/province must be selected'
                 };
 
-                if (value === false) return err;
+                if (value === "false") return err;
             }
         ]
       },
