@@ -45,8 +45,9 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
       },
 
       updateAttendee: function(e) {
-        var view = this;
-        if (typeof this.form.commit() === 'undefined') {
+        var view = this,
+            errors = this.form.commit();
+        if (typeof errors === 'undefined') {
           $(".update", this.$el).attr("disabled", "disabled");
           this.model.save(
             {},
@@ -69,6 +70,21 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
               }
             }
           );
+        } else {
+          var errorList = "",
+              i = 0;
+          _.each(errors, function(value, key, list) {
+            errorList += (i > 0) ? ", " : "";
+            errorList += key.capitalize();
+            i++;
+          });
+          $('html, body').animate({
+              scrollTop: $(".error").first().offset().top - 100
+          }, 2000);
+          Messenger().post({
+            message: "You have errors that you must correct. You have issues with the following: "+errorList+".",
+            type: "error"
+          });
         }
       }
   });

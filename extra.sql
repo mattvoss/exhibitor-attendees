@@ -71,3 +71,9 @@ SELECT
 FROM conf_dtregister_user
 WHERE eventid = 9 OR eventid = 10
 GROUP BY dateRegistered ASC
+
+
+DELETE FROM biller_field_values WHERE user_id = 290 AND event_id = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
+DELETE FROM biller WHERE userId = 290 AND eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
+DELETE FROM exhibitorAttendeeNumber WHERE userId = 290 AND eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
+DELETE FROM exhibitorAttendees WHERE userId = 290 AND eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f";

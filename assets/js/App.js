@@ -44,3 +44,7 @@ Exhibitors.on('initialize:after', function() {
     Backbone.history.navigate("start", { trigger: true });
   }
 });
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+};
