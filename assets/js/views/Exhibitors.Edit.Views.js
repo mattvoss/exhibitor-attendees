@@ -79,7 +79,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
             i++;
           });
           $('html, body').animate({
-              scrollTop: $(".error").first().offset().top - 100
+              scrollTop: $(".control-group.error").first().offset().top - 100
           }, 2000);
           Messenger().post({
             message: "You have errors that you must correct. You have issues with the following: "+errorList+".",

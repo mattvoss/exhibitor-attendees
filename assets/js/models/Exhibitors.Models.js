@@ -67,7 +67,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
                     message: 'Site ID must be 6 digits and only numeric'
                 };
 
-                if (value.length > 0 && value.length !== 6 && !(/\D/.test(value))) return err;
+                if (value.length > 0 && value.length !== 6 && !(/^\d+$/.test(value))) return err;
             }
         ]
       },
