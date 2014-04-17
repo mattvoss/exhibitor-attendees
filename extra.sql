@@ -14,10 +14,34 @@ SELECT
         SUM(memtot) as count,
         (select SUM(memtot) from conf_dtregister_user
        where  DATE_FORMAT(register_date, '%Y-%m-%d') <= dateRegistered AND (
-              eventid = 9 OR eventid = 10)) as total
+              eventid = 9 OR eventid = 10 OR eventid = 11)) as total
 FROM conf_dtregister_user
-WHERE eventid = 9 OR eventid = 10
+WHERE eventid = 9 OR eventid = 10 OR eventid = 11
 GROUP BY dateRegistered ASC
+
+SELECT
+        DATE_FORMAT(register_date, '%Y-%m-%d') as dateRegistered,
+        DATEDIFF('2014-05-05', DATE_FORMAT(register_date, '%Y-%m-%d')) as daysOut,
+        SUM(memtot) as count,
+        (select SUM(memtot) from conf_dtregister_user
+       where  DATE_FORMAT(register_date, '%Y-%m-%d') <= dateRegistered AND (
+              eventid = 9 OR eventid = 10 OR eventid = 11 OR eventid = 12) AND status > -1) as total
+FROM conf_dtregister_user
+WHERE (eventid = 9 OR eventid = 10 OR eventid = 11 OR eventid = 12) AND status > -1
+GROUP BY dateRegistered ASC
+
+
+SELECT
+        DATE_FORMAT(register_date, '%Y-%m-%d') as dateRegistered,
+        DATEDIFF('2014-05-05', DATE_FORMAT(register_date, '%Y-%m-%d')) as daysOut,
+        SUM(memtot) as count,
+        (select SUM(memtot) from conf_dtregister_user
+       where  DATE_FORMAT(register_date, '%Y-%m-%d') <= dateRegistered AND (
+              eventid = 9 AND status = 1)) as total
+FROM conf_dtregister_user
+WHERE eventid = 9 AND status = 1
+GROUP BY dateRegistered ASC
+
 
 SELECT
         DATE_FORMAT(register_date, '%Y-%m-%d') as dateRegistered,
@@ -72,8 +96,86 @@ FROM conf_dtregister_user
 WHERE eventid = 9 OR eventid = 10
 GROUP BY dateRegistered ASC
 
+SELECT exhib_dtregister_user.* FROM exhib_dtregister_user
+LEFT JOIN checkin.biller ON (exhib_dtregister_user.userId = checkin.biller.userId AND checkin.biller.eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f")
+WHERE exhib_dtregister_user.eventId = 3 AND checkin.biller.userId IS NULL AND exhib_dtregister_user.status > -1
+
 
 DELETE FROM biller_field_values WHERE user_id = 290 AND event_id = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
 DELETE FROM biller WHERE userId = 290 AND eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
 DELETE FROM exhibitorAttendeeNumber WHERE userId = 290 AND eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
 DELETE FROM exhibitorAttendees WHERE userId = 290 AND eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
+
+
+SELECT
+        exhib_dtregister_user.confirmNum,
+        exhib_dtregister_user_field_values.value
+FROM exhib_dtregister_user
+LEFT JOIN exhib_dtregister_user_field_values ON exhib_dtregister_user.userId = exhib_dtregister_user_field_values.user_id AND exhib_dtregister_user_field_values.field_id = 12
+WHERE userId NOT IN
+(
+    224,
+    268,
+    292,
+    194,
+    197,
+    263,
+    261,
+    255,
+    213,
+    254,
+    283,
+    221,
+    260,
+    201,
+    275,
+    272,
+    237,
+    223,
+    226,
+    199,
+    277,
+    293,
+    229,
+    276,
+    267,
+    242,
+    220,
+    258,
+    219,
+    209,
+    212,
+    274,
+    290,
+    225,
+    253,
+    282,
+    289,
+    215,
+    218,
+    210,
+    230,
+    251,
+    233,
+    250,
+    287,
+    295,
+    281,
+    227,
+    271,
+    294,
+    299,
+    297,
+    234,
+    211,
+    239,
+    288,
+    235,
+    241,
+    302,
+    270,
+    204,
+    245,
+    195
+) AND eventId = 3;
+

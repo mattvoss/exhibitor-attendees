@@ -781,7 +781,8 @@ var getExhibitorPayments = function(biller, callback) {
       event_id: opts.configs.get("uuid")
     }
   }).success(function(payments) {
-    callback(payments.toJSON());
+    payments = (payments !== null) ? payments.toJSON() : [];
+    callback(payments);
   });
 };
 
