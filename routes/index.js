@@ -313,7 +313,9 @@ exports.initialize = function() {
       organization :        { type: Sequelize.STRING(255) },
       created :             { type: Sequelize.DATE },
       updated :             { type: Sequelize.DATE },
-      siteId :              { type: Sequelize.STRING(10) }
+      siteId :              { type: Sequelize.STRING(10) },
+      attend:               { type: Sequelize.BOOLEAN },
+      checked_in_time :     { type: Sequelize.DATE }
     });
 
 };
