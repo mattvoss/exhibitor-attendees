@@ -123,7 +123,7 @@ module.exports = function(grunt) {
           'lib/backbone/backbone.js',
           'lib/backbone.wreqr/backbone.wreqr.js',
           'lib/backbone.babysitter/backbone.babysitter.js',
-          'lib/backbone.supermodel/build/backbone.supermodel.js',
+          'lib/backbone.supermodel/backbone.supermodel.js',
           'bower_components/marionette/lib/core/backbone.marionette.js',
           'lib/backbone.marionette.handlebars/backbone.marionette.handlebars.js',
           'lib/backbone-forms/distribution/backbone-forms.js',
