@@ -121,7 +121,7 @@ module.exports = function(grunt) {
           'lib/bootstrap/bootstrap.js',
           'bower_components/bootstrap-jasny/dist/extend/js/jasny-bootstrap.js',
           'lib/backbone/backbone.js',
-          'lib/backbone.wreqr/lib/backbone.wreqr.js',
+          'lib/backbone.wreqr/backbone.wreqr.js',
           'lib/backbone.babysitter/backbone.babysitter.js',
           'lib/backbone.supermodel/build/backbone.supermodel.js',
           'bower_components/marionette/lib/core/backbone.marionette.js',

@@ -119,3 +119,14 @@ WHERE userId NOT IN
     FROM  checkin.exhibitorAttendeeNumber
 ) AND eventId = 3 AND exhib_dtregister_user.status > -1;
 
+DELETE FROM biller WHERE eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
+DELETE FROM biller_field_Values WHERE event_id = "84a8873a-92d5-11e3-a3e0-2b963df5580f";
+
+SELECT userId, eventId, local_eventId, type, register_date, payment_type, due_amount, pay_later_option, confirmNum, user_id, payment_verified, pay_later_paid, discount_code_id, billing_firstname, billing_lastname, billing_address, billing_city, billing_state, billing_zipcode, billing_email, due_payment, status, attend, paid_amount, transaction_id, memtot, cancel, tax_exemption, tax_exemption_code
+FROM biller WHERE eventId = "84a8873a-92d5-11e3-a3e0-2b963df5580f"
+
+SELECT
+local_id, event_id, field_id, user_id, value
+FROM biller_field_values WHERE event_id = "84a8873a-92d5-11e3-a3e0-2b963df5580f"
+
+
