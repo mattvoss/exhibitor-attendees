@@ -353,116 +353,6 @@ exports.refreshExhibitor = function(req, res) {
 
 //Log in an existing user, starting a session
 
-
-//Add a user
-exports.addUser = function(req, res) {
-    var bsalt = crypto.randomBytes(20),
-        salt = bsalt.toString('hex'),
-        hmac = crypto.createHmac("sha1", bsalt),
-        signature = hmac.update(new Buffer(req.body.password, 'utf-8')).digest("hex"),
-        user = {
-          email: req.body.email,
-          username: req.body.email,
-          crypted_password: signature,
-          salt: salt,
-          admin: false,
-          enabled: true,
-          account_type: 1,
-          title: req.body.title,
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          street1: req.body.street1,
-          street2: req.body.street2,
-          city: req.body.city,
-          state: req.body.state,
-          zipCode: req.body.zipCode,
-          phone: req.body.phone
-        };
-    Users.create(user).success(function(user) {
-      var credit = {
-        userId: user.values.id,
-        type: "projection",
-        transactionId: uuid.v4(),
-        memo: "starting balance",
-        amount: user.values.projectionCreditBalance
-      };
-      UserAccountLedger
-        .create(credit)
-        .then(function(projection) {
-          credit = underscore.extend(
-            credit,
-            {
-              type: "simulation",
-              transactionId: uuid.v4(),
-              memo: "starting balance",
-              amount: user.values.simulationCreditBalance
-            }
-          );
-          return UserAccountLedger.create(credit);
-        })
-        .then(function(simulation) {
-          credit = underscore.extend(
-            credit,
-            {
-              type: "voter-contacts",
-              transactionId: uuid.v4(),
-              memo: "starting balance",
-              amount: user.values.voterContactBalance
-            }
-          );
-          return UserAccountLedger.create(credit);
-        })
-        .then(function(voterContacts) {
-          req.session.user = user;
-          res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
-          res.writeHead(200, { 'Content-type': 'application/json' });
-          res.write(JSON.stringify(user), 'utf-8');
-          res.end('\n');
-        });
-
-    }).error(function(error) {
-      res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
-      res.writeHead(500, { 'Content-type': 'application/json' });
-      var errorMsg = {
-            status: "error",
-            messsage: error
-          };
-      res.write(JSON.stringify(errorMsg), 'utf-8');
-      res.end('\n');
-    });
-};
-
-//Update User
-exports.updateUser = function(req, res) {
-  var userAttributes = {
-        email: req.body.email,
-        username: req.body.email,
-        account_type: 1,
-        title: req.body.title,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        street1: req.body.street1,
-        street2: req.body.street2,
-        city: req.body.city,
-        state: req.body.state,
-        zipCode: req.body.zipCode,
-        phone: req.body.phone
-      },
-      callback = function(user) {
-        console.log(user);
-        req.session.user = user;
-        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
-        res.writeHead(200, { 'Content-type': 'application/json' });
-        res.write(JSON.stringify(user), 'utf-8');
-        res.end('\n');
-      };
-  Users.find(req.params.userId).success(function(user) {
-    user.updateAttributes(userAttributes).success(function(user) {
-      getUser(user.values.id, callback);
-    });
-  });
-};
-
 //Auth a user
 exports.authUser = function(req, res) {
   var request = req,
@@ -666,7 +556,7 @@ var importExhibitor = function(billerInfo, cb) {
               "attendees": 0
             };
         exhibitor.values.forEach(function(val, index) {
-          if (val.field_id == 13) {
+          if (val.field_id === 13) {
             var exBooths = val.value.split("|");
             console.log("Booths", exBooths);
             var standardAttendees = underscore.reduce(
@@ -680,7 +570,7 @@ var importExhibitor = function(billerInfo, cb) {
             );
             console.log("Standard Attendees", standardAttendees);
             totalAttendees.attendees += parseInt(standardAttendees, 10);
-          } else if (val.field_id == 52) {
+          } else if (val.field_id === 52) {
             console.log("Additional Attendees", val.value);
             totalAttendees.attendees += parseInt(val.value, 10);
           }
@@ -812,7 +702,7 @@ var getBillerFieldValues = function(biller, cb) {
                 "label":item.name,
                 "value": item.value
               };
-          if ( item.type == 1 || item.type == 3 || item.type == 4 ) {
+          if ( item.type === 1 || item.type === 3 || item.type === 4 ) {
             var ar = item.values.split("|");
             field.value = ar[item.value];
           }
@@ -860,7 +750,7 @@ var getExhibitorAttendees = function(biller, callback) {
 
 function pad(num, size) {
     var s = num+"";
-    while (s.length < size) s = "0" + s;
+    while (s.length < size) { s = "0" + s; }
     return s;
 }
 

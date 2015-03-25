@@ -1,0 +1,18 @@
+{
+    "remote": {
+        "host": "localhost",
+        "database": "regionvivpp_registration",
+        "user": "importUser",
+        "password": "XURpHFj4XWb3CwEz"
+    },
+    "local": {
+        "host": "localhost",
+        "database": "checkin",
+        "user": "importUser",
+        "password": "XURpHFj4XWb3CwEz"
+    },
+    "remoteEventId": 4,
+    "prefix": "exhib",
+    "uuid": "d03e3ffa-d2fd-11e4-86b8-23b3bb2400f3",
+    "type": "exhibitor"
+}

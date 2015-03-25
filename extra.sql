@@ -3,8 +3,23 @@ SELECT
         DATEDIFF('2013-05-06', DATE_FORMAT(RegisterDate, '%Y-%m-%d')) as daysOut,
         COUNT(firstname) as count,
         (select count(*) from GRCombinedRegistrations04
-       where  DATE_FORMAT(RegisterDate, '%Y-%m-%d') <= dateRegistered) as total
+       where  DATE_FORMAT(RegisterDate, '%Y-%m-%d') <= dateRegistered AND EventName <>  "DOL/OSHA Registration 2013 Safety Conference"
+AND EventName <>  "VPPPA Speaker Registration 2013 Safety Conference") as total
 FROM GRCombinedRegistrations04
+WHERE EventName <>  "DOL/OSHA Registration 2013 Safety Conference"
+AND EventName <>  "VPPPA Speaker Registration 2013 Safety Conference"
+GROUP BY dateRegistered ASC
+
+
+SELECT
+        DATE_FORMAT(register_date, '%Y-%m-%d') as dateRegistered,
+        DATEDIFF('2014-05-05', DATE_FORMAT(register_date, '%Y-%m-%d')) as daysOut,
+        SUM(memtot) as count,
+        (select SUM(memtot) from conf_dtregister_user
+       where  DATE_FORMAT(register_date, '%Y-%m-%d') <= dateRegistered AND (
+              eventid = 9 OR eventid = 10) AND status > -1) as total
+FROM conf_dtregister_user
+WHERE (eventid = 9 OR eventid = 10) AND status > -1
 GROUP BY dateRegistered ASC
 
 
@@ -130,3 +145,50 @@ local_id, event_id, field_id, user_id, value
 FROM biller_field_values WHERE event_id = "84a8873a-92d5-11e3-a3e0-2b963df5580f"
 
 
+SELECT
+      votes.electionid,
+      votes.candidateid,
+      electionOfficeCandidates.name,
+      electionOfficeCandidates.company,
+      count(votes.id) as candidateVote,
+      totalVotes.totalVote,
+      (count(votes.id)/totalVotes.totalVote) * 100 as percent
+FROM votes
+LEFT JOIN electionOfficeCandidates ON votes.candidateid = electionOfficeCandidates.id
+LEFT JOIN (
+  SELECT
+      votes.electionid,
+      count(votes.id) as totalVote
+  FROM votes
+  GROUP BY electionid
+) as totalVotes ON votes.electionid = totalVotes.electionid
+WHERE votes.electionid = ?
+GROUP BY electionid, candidateid
+
+SELECT
+      votes.electionid,
+      votes.candidateid,
+      electionOfficeCandidates.name,
+      electionOfficeCandidates.company,
+      count(votes.id) as candidateVote,
+      totalVotes.totalVote,
+      (count(votes.id)/totalVotes.totalVote) * 100 as percent
+FROM votes
+LEFT JOIN electionOfficeCandidates ON votes.candidateid = electionOfficeCandidates.id
+LEFT JOIN (
+  SELECT
+      votes.electionid,
+      count(votes.id) as totalVote
+  FROM votes
+  GROUP BY electionid
+) as totalVotes ON votes.electionid = totalVotes.electionid
+GROUP BY electionid, candidateid
+
+SELECT
+FROM votes
+LEFT JOIN electionOfficeCandidates ON votes.candidateid = electionOfficeCandidates.id
+LEFT JOIN electionOfficeCandidates ON votes.candidateid = electionOfficeCandidates.id
+
+SELECT
+  SUBSTR(`registrantid`, 2);
+FROM votes
