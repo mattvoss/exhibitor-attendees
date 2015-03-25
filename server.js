@@ -152,6 +152,7 @@ routes.initialize();
 
 //API
 app.post('/api/exhibitor/authenticate', routes.authUser);
+app.get('/api/exhibitor/:confirmation/:zipcode/changeAttendees/:attendees', routes.updateAttendeeNumber);
 app.get('/api/user/authenticate/logout', routes.logoutUser);
 app.del('/api/exhibitor/:userId', routes.logoutUser);
 app.get('/api/getbooths/:pos', routes.getBoothSize);

@@ -363,56 +363,60 @@ exports.authUser = function(req, res) {
         res.write(JSON.stringify(exhibitor), 'utf-8');
         res.end('\n');
       },
-      processExhibitor = function(biller) {
-        biller = biller.toJSON();
-        createExhibitorModel(biller, sendBack);
-      };
-  CheckinBiller.find({ where: { confirmNum: req.body.confirmation, status: { gte: 0 } } }).success(function(biller) {
-    if (biller !== null) {
-      CheckinBillerFieldValues.find({
-        where: {
-          user_id: biller.values.userId,
-          field_id: 8,
-          event_id: opts.configs.get("uuid"),
-          value: { like: "%"+req.body.zipcode+"%" }
-        }
-      }).success(function(billerFieldValues) {
-        processExhibitor(biller);
-      });
-    } else {
-      RegBiller.find({ where: { confirmNum: req.body.confirmation, status: { gte: 0 } } }).success(function(biller) {
-        if (biller !== null) {
-
-          RegBillerFieldValues.find({
-            where: {
-              user_id: biller.values.userId,
-              field_id: 8,
-              value: { like: "%"+req.body.zipcode+"%" }
-            }
-          }).success(function(billerFieldValues) {
-            var callback = function(results) {
-                  processExhibitor(results);
-                };
-            importExhibitor(biller, callback);
-          });
-
+      sendBackError = function() {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(401, { 'Content-type': 'application/json' });
+        var errorMsg = {
+              status: "error",
+              messsage: {
+                response: "Unable to authenticate user"
+              }
+            };
+        res.write(JSON.stringify(errorMsg), 'utf-8');
+        res.end('\n');
+      },
+      cback = function(exhibitor) {
+        if (exhibitor) {
+          sendBack(exhibitor);
         } else {
-          res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
-          res.writeHead(401, { 'Content-type': 'application/json' });
-          var errorMsg = {
-                status: "error",
-                messsage: {
-                  response: "Unable to authenticate user"
-                }
-              };
-          res.write(JSON.stringify(errorMsg), 'utf-8');
-          res.end('\n');
+          sendBackError();
         }
-      });
-    }
-  });
+      };
+
+  addExhibitor(req.body.confirmation, req.body.zipcode, null, cback);
 };
 
+exports.updateAttendeeNumber = function(req, res) {
+  var request = req,
+      sendBack = function(exhibitor) {
+        req.session.user = exhibitor;
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(200, { 'Content-type': 'application/json' });
+        res.write(JSON.stringify(exhibitor), 'utf-8');
+        res.end('\n');
+      },
+      sendBackError = function() {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(401, { 'Content-type': 'application/json' });
+        var errorMsg = {
+              status: "error",
+              messsage: {
+                response: "Unable to authenticate user"
+              }
+            };
+        res.write(JSON.stringify(errorMsg), 'utf-8');
+        res.end('\n');
+      },
+      cback = function(exhibitor) {
+        if (exhibitor) {
+          sendBack(exhibitor);
+        } else {
+          sendBackError();
+        }
+      };
+
+  addExhibitor(req.params.confirmation, req.params.zipcode, req.params.attendees, cback);
+};
 //Log out the current user
 exports.logoutUser = function(req, res) {
  req.session.destroy(function () {
@@ -431,7 +435,7 @@ exports.getBoothSize = function(req, res) {
     }
   }).success(function(field) {
     var booth = field.values.split("|")[req.params.pos],
-        size = (booth.indexOf("(10'x20')") > -1) ? 4 : 2,
+        size = boothSize(booth),
         result = { "val": booth, "size": size  };
 
     res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
@@ -516,7 +520,17 @@ exports.updateAttendee = function(req, res) {
   });
 };
 
-var importExhibitor = function(billerInfo, cb) {
+var boothSize = function(booth) {
+  if (booth.indexOf("(10'X20')") > -1) {
+    return 4;
+  } else if (booth.indexOf("(20'X20')") > -1 || booth.indexOf("(10'X40')") > -1) {
+    return 8;
+  } else {
+    return 2;
+  }
+};
+
+var importExhibitor = function(billerInfo, numAttendees, cb) {
   async.waterfall([
     function(callback){
       var checkinBiller = billerInfo.values;
@@ -549,32 +563,36 @@ var importExhibitor = function(billerInfo, cb) {
           event_id: opts.configs.get("uuid")
         }
       }).success(function(field) {
-        var booths = field.values.split("|"),
+        var arBooths = field.values.split("|"),
             totalAttendees = {
               "userId": exhibitor.biller.userId,
               "eventId": opts.configs.get("uuid"),
               "attendees": 0
             };
-        exhibitor.values.forEach(function(val, index) {
-          if (val.field_id === 13) {
-            var exBooths = val.value.split("|");
-            console.log("Booths", exBooths);
-            var standardAttendees = underscore.reduce(
-              exBooths,
-              function(attendees, booth){
-                var num = (booths[booth].indexOf("(10'x20')") > -1) ? 4 : 2;
-                console.log("Booth Attendees", num);
-                return attendees + num;
-              },
-              0
-            );
-            console.log("Standard Attendees", standardAttendees);
-            totalAttendees.attendees += parseInt(standardAttendees, 10);
-          } else if (val.field_id === 52) {
-            console.log("Additional Attendees", val.value);
-            totalAttendees.attendees += parseInt(val.value, 10);
-          }
-        });
+        if (numAttendees) {
+          totalAttendees.attendees = parseInt(numAttendees, 10);
+        } else {
+          exhibitor.values.forEach(function(val, index) {
+            if (val.field_id === 13) {
+              var exBooths = val.value.split("|");
+              console.log("Booths", exBooths);
+              var standardAttendees = underscore.reduce(
+                exBooths,
+                function(attendees, booth){
+                  var num = boothSize(arBooths[parseInt(booth,10)]);
+                  console.log("Booth Attendees", num);
+                  return attendees + num;
+                },
+                0
+              );
+              console.log("Standard Attendees", standardAttendees);
+              totalAttendees.attendees += parseInt(standardAttendees, 10);
+            } else if (val.field_id === 52) {
+              console.log("Additional Attendees", val.value);
+              totalAttendees.attendees += parseInt(val.value, 10);
+            }
+          });
+        }
         CheckinExhibitorAttendeeNumber.create(totalAttendees).success(function(number) {
           callback(null, exhibitor);
         });
@@ -732,6 +750,28 @@ var getExhibitorAttendeesNumber = function(biller, callback) {
   });
 };
 
+var updateExhibitorAttendeesNumber = function(biller, numAttendees, callback) {
+  CheckinExhibitorAttendeeNumber.find({
+    where: {
+      userId: biller.userId,
+      eventId: opts.configs.get("uuid")
+    }
+  }).success(function(number) {
+    var update = {
+          "attendees": parseInt(numAttendees, 10)
+        };
+    number.updateAttributes(
+      numAttendees,
+      [
+        'attendees'
+      ]
+    ).success(function(number) {
+      callback(number.toJSON());
+
+    });
+  });
+};
+
 var getExhibitorAttendees = function(biller, callback) {
   CheckinExhibitorAttendees.findAll({
     where: {
@@ -745,6 +785,59 @@ var getExhibitorAttendees = function(biller, callback) {
     async.map(attendees, convertToJson, function(err, results){
       callback(results);
     });
+  });
+};
+
+var addExhibitor = function(confirmation, zip, numAttendees, callback) {
+  numAttendees = numAttendees || null;
+  var processExhibitor = function(biller) {
+        biller = biller.toJSON();
+        createExhibitorModel(biller, callback);
+      };
+  CheckinBiller.find({ where: { confirmNum: confirmation, status: { gte: 0 } } }).success(function(biller) {
+    if (biller !== null) {
+      CheckinBillerFieldValues.find({
+        where: {
+          user_id: biller.values.userId,
+          field_id: 8,
+          event_id: opts.configs.get("uuid"),
+          value: { like: "%"+zip+"%" }
+        }
+      }).success(function(billerFieldValues) {
+        if (numAttendees) {
+          updateExhibitorAttendeesNumber(
+            biller,
+            numAttendees,
+            function(number) {
+              processExhibitor(biller);
+            }
+          );
+        } else {
+          processExhibitor(biller);
+        }
+      });
+    } else {
+      RegBiller.find({ where: { confirmNum: confirmation, status: { gte: 0 } } }).success(function(biller) {
+        if (biller !== null) {
+
+          RegBillerFieldValues.find({
+            where: {
+              user_id: biller.values.userId,
+              field_id: 8,
+              value: { like: "%"+zip+"%" }
+            }
+          }).success(function(billerFieldValues) {
+            var cback = function(results) {
+                  processExhibitor(results);
+                };
+            importExhibitor(biller, numAttendees, cback);
+          });
+
+        } else {
+          callback(null);
+        }
+      });
+    }
   });
 };
 
