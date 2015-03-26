@@ -107,7 +107,7 @@ exports.initialize = function() {
     });
 
     RegGroupMembers = db.registration.define('exhib_dtregister_group_member', {
-      groupMemberId :       { type: Sequelize.INTEGER },
+      groupMemberId :       { type: Sequelize.INTEGER, primaryKey: true },
       groupUserId :         { type: Sequelize.INTEGER },
       created :             { type: Sequelize.DATE },
       confirmnum :          { type: Sequelize.STRING(100) },
@@ -203,7 +203,7 @@ exports.initialize = function() {
     });
 
     RegBiller = db.registration.define('exhib_dtregister_user', {
-      userid :              { type: Sequelize.INTEGER },
+      userid :              { type: Sequelize.INTEGER, primaryKey: true },
       eventid :             { type: Sequelize.INTEGER },
       type :                { type: Sequelize.ENUM('I','G') },
       register_date :       { type: Sequelize.DATE },
