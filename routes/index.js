@@ -533,19 +533,20 @@ var boothSize = function(booth) {
 var importExhibitor = function(billerInfo, numAttendees, cb) {
   async.waterfall([
     function(callback){
-      var checkinBiller = billerInfo.values;
-      checkinBiller.local_eventId = checkinBiller.eventId;
+      var checkinBiller = billerInfo.get();
+      checkinBiller.userId = checkinBiller.userid;
+      checkinBiller.local_eventId = checkinBiller.eventid;
       checkinBiller.eventId = opts.configs.get("uuid");
       CheckinBiller.create(checkinBiller).then(function(biller) {
         callback(null, biller);
       });
     },
     function(biller, callback){
-      RegBillerFieldValues.findAll({ where: {user_id: billerInfo.values.userId} }).then(function(regBillerValues) {
+      RegBillerFieldValues.findAll({ where: {user_id: billerInfo.get("userid")} }).then(function(regBillerValues) {
         var checkinBillerValues = [];
         regBillerValues.forEach(function(values, index) {
-          var vals = values.values;
-          vals.local_id = checkinBillerValues.id;
+          var vals = values.get();
+          vals.local_id = vals.id;
           vals.event_id = opts.configs.get("uuid");
           vals.id = null;
           checkinBillerValues.push(vals);
@@ -563,9 +564,9 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
           event_id: opts.configs.get("uuid")
         }
       }).then(function(field) {
-        var arBooths = field.values.split("|"),
+        var arBooths = field.get("values").split("|"),
             totalAttendees = {
-              "userId": exhibitor.biller.userId,
+              "userId": exhibitor.biller.get("userId"),
               "eventId": opts.configs.get("uuid"),
               "attendees": 0
             };
@@ -599,8 +600,8 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
       });
     },
     function(exhibitor, callback){
-      RegEventFees.find({ where: {user_id: billerInfo.values.userId} }).then(function(regFees) {
-        var checkinFees = regFees.values;
+      RegEventFees.find({ where: {user_id: billerInfo.get("userId")} }).then(function(regFees) {
+        var checkinFees = regFees.get();
         checkinFees.local_id = checkinFees.id;
         checkinFees.event_id = opts.configs.get("uuid");
         checkinFees.id = null;
@@ -800,7 +801,7 @@ var addExhibitor = function(confirmation, zip, numAttendees, callback) {
     if (biller !== null) {
       CheckinBillerFieldValues.find({
         where: {
-          user_id: biller.values.userId,
+          user_id: biller.get("userId"),
           field_id: 8,
           event_id: opts.configs.get("uuid"),
           value: { like: "%"+zip+"%" }
@@ -824,7 +825,7 @@ var addExhibitor = function(confirmation, zip, numAttendees, callback) {
 
           RegBillerFieldValues.find({
             where: {
-              user_id: biller.values.userId,
+              user_id: biller.get("userId"),
               field_id: 8,
               value: { like: "%"+zip+"%" }
             }
