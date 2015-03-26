@@ -30,11 +30,11 @@ Exhibitors.addRegions({
   body: '#body'
 });
 
-Exhibitors.on('initialize:before', function() {
+Exhibitors.on('before:start', function() {
   this.collections = {};
 });
 
-Exhibitors.on('initialize:after', function() {
+Exhibitors.on('start', function() {
   this.currentView = null;
 
   Backbone.history.start({pushState: true});

@@ -1,173 +1,176 @@
-/*  ==============================================================
-    Include required packages
-=============================================================== */
+(function(){
+  "use strict";
 
-var express = require('express.io'),
-    fs = require('fs'),
-    nconf = require('nconf'),
-    path = require('path'),
-    redis = require("redis"),
-    redisClient = redis.createClient(),
-    redisStore = require('connect-redis')(express),
-    CacheControl = require("express-cache-control"),
-    cache = new CacheControl().middleware,
-    config, configFile, opts, userSockets = [];
+  /*  ==============================================================
+      Include required packages
+  =============================================================== */
 
-/*  ==============================================================
-    Configuration
-=============================================================== */
+  var session = require('express-session'),
+      cors = require('cors'),
+      bodyParser = require('body-parser'),
+      methodOverride = require('method-override'),
+      errorhandler = require('errorhandler'),
+      cookieParser = require('cookie-parser'),
+      favicon = require('serve-favicon'),
+      compression = require('compression'),
+      morgan = require('morgan'),
+      fs = require('fs'),
+      nconf = require('nconf'),
+      path = require('path'),
+      redis = require("redis"),
+      url = require('url'),
+      config, configFile, opts = {}, userSockets = [], publicKey, privateKey,
+      redisConfig = {
+          "host": "localhost",
+          "port": "6379",
+          "ttl": 43200,
+          "db": 0
+      };
 
-//used for session and password hashes
-var salt = '20sdkfjk23';
+  /*  ==============================================================
+      Configuration
+  =============================================================== */
 
-if (process.argv[2]) {
-    if (fs.lstatSync(process.argv[2])) {
-        configFile = require(process.argv[2]);
-    } else {
-        configFile = process.cwd() + '/config/settings.json';
-    }
-} else {
-    configFile = process.cwd()+'/config/settings.json';
-}
+  //used for session and password hashes
+  var salt = '20sdkfjk23';
 
-config = nconf
-          .argv()
-          .env("__")
-          .file({ file: configFile });
+  if (process.argv[2]) {
+      if (fs.lstatSync(process.argv[2])) {
+          configFile = require(process.argv[2]);
+      } else {
+          configFile = process.cwd() + '/config/settings.json';
+      }
+  } else {
+      configFile = process.cwd()+'/config/settings.json';
+  }
 
-if (config.get("log")) {
-    var access_logfile = fs.createWriteStream(config.get("log"), {flags: 'a'});
-}
+  config = nconf
+            .argv()
+            .env("__")
+            .file({ file: configFile });
 
-if (config.get("ssl")) {
+  if (config.get("log")) {
+      var access_logfile = fs.createWriteStream(config.get("log"), {flags: 'a'});
+  }
 
-    if (config.get("ssl:key")) {
-        opts.key = fs.readFileSync(config.get("ssl:key"));
-    }
+  if (config.get("ssl")) {
 
-    if (config.get("ssl:cert")) {
-        opts.cert = fs.readFileSync(config.get("ssl:cert"));
-    }
+      if (config.get("ssl:key")) {
+          opts.key = fs.readFileSync(config.get("ssl:key"));
+      }
 
-    if (config.get("ssl:ca")) {
-        opts.ca = [];
-        config.get("ssl:ca").forEach(function (ca, index, array) {
-            opts.ca.push(fs.readFileSync(ca));
-        });
-    }
+      if (config.get("ssl:cert")) {
+          opts.cert = fs.readFileSync(config.get("ssl:cert"));
+      }
 
-    console.log("Express will listen: https");
+      if (config.get("ssl:ca")) {
+          opts.ca = [];
+          config.get("ssl:ca").forEach(function (ca, index, array) {
+              opts.ca.push(fs.readFileSync(ca));
+          });
+      }
 
-}
+      console.log("Express will listen: https");
 
-//Session Conf
-if (config.get("redis")) {
-    var redisConfig = config.get("redis");
-} else {
-    var redisConfig = {
-        "host": "localhost",
-        "port": "6379",
-        "ttl": 43200,
-        "db": "exhibitorAttendees"
-    };
-}
+  }
 
-var app = module.exports = express(opts);
+  //Session Conf
+  if (config.get("redis")) {
+    redisConfig = config.get("redis");
+  }
 
-var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', '*');
-    res.header('Access-Control-Allow-Headers', '*');
+  var redisClient = redis.createClient(redisConfig.port, redisConfig.host),
+      RedisStore = require('connect-redis')(session),
+      allowCrossDomain = function(req, res, next) {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', '*');
+        res.header('Access-Control-Allow-Headers', '*');
 
-    // intercept OPTIONS method
-    if ('OPTIONS' == req.method) {
-      res.send(200);
-    }
-    else {
-      next();
-    }
-};
+        // intercept OPTIONS method
+        if ('OPTIONS' === req.method) {
+          res.send(200);
+        }
+        else {
+          next();
+        }
+      };
+  opts.secret = salt;
+  opts.store = new RedisStore(redisConfig);
 
-// Configuration
-var oneDay = 86400000,
-    cookieParser = express.cookieParser();
-app.configure(function(){
-    if ("log" in config) {
-        app.use(express.logger({stream: access_logfile }));
-    }
-    app.use(cookieParser);
-    app.use(express.session({
-        store: new redisStore(redisConfig),
-        secret: salt,
-        proxy: true
-    }));
-    app.use(express.json());
-    app.use(express.urlencoded());
-    app.use(express.methodOverride());
-    app.use(allowCrossDomain);
-    //app.use('/bootstrap', express.static(__dirname + '/public/bootstrap'));
-    app.use('/css', express.static(__dirname + '/public/css', { maxAge: oneDay }));
-    app.use('/js', express.static(__dirname + '/public/js', { maxAge: oneDay }));
-    app.use('/images', express.static(__dirname + '/public/images', { maxAge: oneDay }));
-    app.use('/img', express.static(__dirname + '/public/images', { maxAge: oneDay }));
-    app.use('/fonts', express.static(__dirname + '/public/fonts', { maxAge: oneDay }));
-    app.use('/assets', express.static(__dirname + '/assets', { maxAge: oneDay }));
-    app.use('/lib', express.static(__dirname + '/lib', { maxAge: oneDay }));
-    app.use('/bower_components', express.static(__dirname + '/bower_components', { maxAge: oneDay }));
-    app.use(app.router);
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
+  var app = module.exports = require("sockpress").init(opts),
+      router = app.express.Router(),
+      apiRouter = app.express.Router();
 
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
+  // Express Configuration
+  var oneDay = 86400000;
 
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
+  app.use(compression());
+  /**
+  if ("log" in config) {
+    app.use(app.express.logger({stream: access_logfile }));
+  }
+  **/
+  app.use(cookieParser());
+  //app.use(favicon(path.join(__dirname, 'assets','images','favicon.ico')));
+  app.use(app.express.static(__dirname + '/public'));     // set the static files location
+  app.use('/css', app.express.static(__dirname + '/public/css' ));
+  app.use('/js', app.express.static(__dirname + '/public/js' ));
+  app.use('/images', app.express.static(__dirname + '/public/images' ));
+  app.use('/img', app.express.static(__dirname + '/public/images' ));
+  app.use('/fonts', app.express.static(__dirname + '/public/fonts' ));
+  app.use('/assets', app.express.static(__dirname + '/assets' ));
+  app.use('/lib', app.express.static(__dirname + '/lib' ));
+  app.use('/bower_components', app.express.static(__dirname + '/bower_components' ));
+  app.use(morgan('dev')); // log every request to the console
+  app.use(bodyParser.urlencoded({'extended':'true'})); // parse application/x-www-form-urlencoded
+  app.use(bodyParser.json()); // parse application/json
+  app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
+  app.use(methodOverride('X-HTTP-Method-Override')); // override with the X-HTTP-Method-Override header in the request
+  app.use(cors());
 
-//delete express.bodyParser.parse['multipart/form-data'];
-//app.use(express.favicon(__dirname + '/public/favicon.ico'));
+  var routes = require('./routes');
 
+  routes.setKey("configs", config);
+  routes.initialize();
+  //ioEvents.initialize(config);
 
-/*  ==============================================================
-    Serve the site skeleton HTML to start the app
-=============================================================== */
+  /*  ==============================================================
+      Routes
+  =============================================================== */
 
-var port = (config.get("port")) ? config.get("port") : 3001;
-if ("ssl" in config) {
-    var server = app.https(opts).io();
-} else {
-    var server = app.http().io();
-}
+  //Standard Routes
+  router.get('/', routes.index);
+  router.get('/start', routes.index);
+  router.get('/edit', routes.index);
+  app.use('/', router);
 
-var routes = require('./routes');
+  //API
+  apiRouter.post('/exhibitor/authenticate', routes.authUser);
+  apiRouter.get('/exhibitor/:confirmation/:zipcode/changeAttendees/:attendees', routes.updateAttendeeNumber);
+  apiRouter.get('/user/authenticate/logout', routes.logoutUser);
+  apiRouter.delete('/exhibitor/:userId', routes.logoutUser);
+  apiRouter.get('/getbooths/:pos', routes.getBoothSize);
+  apiRouter.get('/exhibitor/refresh', routes.refreshExhibitor);
+  apiRouter.post('/exhibitor/:exhibitorId/attendee', routes.addAttendee);
+  apiRouter.put('/exhibitor/:exhibitorId/attendee', routes.updateAttendee);
+  app.use('/api', apiRouter);
 
-routes.setKey("configs", config);
-routes.initialize();
+  /*  ==============================================================
+      Socket.IO Routes
+  =============================================================== */
 
-/*  ==============================================================
-    Routes
-=============================================================== */
+  /*
+  routes.setKey("io", app.io);
+  app.io.route('ready', ioEvents.connection);
+  app.io.route('room:join', ioEvents.onJoinRoom);
+  app.io.route('room:leave', ioEvents.onLeaveRoom);
+  app.io.route('refreshToken', ioEvents.refreshToken);
+  */
 
-//API
-app.post('/api/exhibitor/authenticate', routes.authUser);
-app.get('/api/exhibitor/:confirmation/:zipcode/changeAttendees/:attendees', routes.updateAttendeeNumber);
-app.get('/api/user/authenticate/logout', routes.logoutUser);
-app.del('/api/exhibitor/:userId', routes.logoutUser);
-app.get('/api/getbooths/:pos', routes.getBoothSize);
-app.get('/api/exhibitor/refresh', routes.refreshExhibitor);
-app.post('/api/exhibitor/:exhibitorId/attendee', routes.addAttendee);
-app.put('/api/exhibitor/:exhibitorId/attendee', routes.updateAttendee);
+  /*  ==============================================================
+      Launch the server
+  =============================================================== */
+  var port = (config.get("port")) ? config.get("port") : 3001;
+  app.listen(port);
 
-// Global handling
-app.get('/', cache("hours", 1), routes.index);
-app.get('*', cache("hours", 1), routes.index);
-
-
-/*  ==============================================================
-    Launch the server
-=============================================================== */
-
-server.listen(port);
-console.log("Express server listening on port %d", port);
+}());

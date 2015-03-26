@@ -2,10 +2,10 @@
   "name": "exhibitor-bower",
   "version": "0.1.0",
   "dependencies": {
-    "handlebars": "*",
+    "handlebars": "~2.0.*",
     "bootstrap": "*",
     "underscore": "*",
-    "marionette": "*",
+    "marionette": "~2.0.*",
     "backbone.wreqr": "*",
     "backbone.babysitter": "https://github.com/marionettejs/backbone.babysitter.git",
     "backbone.marionette.handlebars": "https://github.com/asciidisco/Backbone.Marionette.Handlebars.git",
@@ -20,8 +20,11 @@
     "jQuery-Mask-Plugin": "*",
     "bootstrap-jasny": "*",
     "backbone.supermodel": "https://github.com/laoshanlung/backbone.supermodel.git",
-    "placeholders": "https://github.com/Spinarooni/Placeholders.js/archive/master.zip",
+    "placeholders": "*",
     "ie-alert": "*",
     "messenger": "*"
+  },
+  "resolutions": {
+    "handlebars": "~2.0.*"
   }
 }

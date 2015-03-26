@@ -1,6 +1,43 @@
 module.exports = function(grunt) {
   // Load Grunt tasks declared in the package.json file
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+  var js = [
+        'lib/jquery/jquery.js',
+        'lib/handlebars/handlebars.js',
+        'lib/swag/swag.js',
+        'lib/underscore/underscore.js',
+        'lib/bootstrap/bootstrap.js',
+        'lib/bootstrap-jasny/jasny-bootstrap.js',
+        'lib/backbone/backbone.js',
+        'lib/backbone.wreqr/backbone.wreqr.js',
+        'lib/backbone.babysitter/backbone.babysitter.js',
+        'lib/backbone.supermodel/backbone.supermodel.js',
+        'lib/marionette/backbone.marionette.js',
+        'lib/backbone.marionette.handlebars/backbone.marionette.handlebars.js',
+        'lib/backbone-forms/distribution/backbone-forms.js',
+        'lib/backbone-forms/distribution/editors/list.js',
+        'lib/backbone-forms/distribution/templates/bootstrap.js',
+        'lib/microplugin/microplugin.js',
+        'lib/sifter/sifter.js',
+        'lib/selectize/selectize.js',
+        'lib/spin.js/spin.js',
+        'lib/ladda-bootstrap/ladda.js',
+        'lib/moment/moment.js',
+        'lib/jQuery-Mask-Plugin/jquery.mask.min.js',
+        'lib/placeholders/placeholders.js',
+        'lib/messenger/messenger.js',
+        'lib/messenger/messenger-theme-future.js'
+      ],
+      css = [
+        'lib/bootstrap/bootstrap.css',
+        'lib/bootstrap-jasny/jasny-bootstrap.css',
+        'lib/font-awesome/font-awesome.css',
+        'lib/selectize/selectize.css',
+        'lib/ladda-bootstrap/ladda-themeless.css',
+        'lib/messenger/messenger.css',
+        'lib/messenger/messenger-theme-future.css',
+        'assets/css/custom.css'
+      ];
 
   // Project configuration.
   grunt.initConfig({
@@ -31,33 +68,7 @@ module.exports = function(grunt) {
           sourceMap: 'public/js/vendors.min.map'
         },
         files: {
-          'public/js/vendors.min.js': [
-            'lib/jquery/jquery.js',
-            'lib/handlebars/handlebars.js',
-            'lib/swag/swag.js',
-            'lib/underscore/underscore.js',
-            'lib/bootstrap/bootstrap.js',
-            'bower_components/bootstrap-jasny/dist/extend/js/jasny-bootstrap.js',
-            'lib/backbone/backbone.js',
-            'lib/backbone.wreqr/lib/backbone.wreqr.js',
-            'lib/backbone.babysitter/backbone.babysitter.js',
-            'lib/backbone.supermodel/build/backbone.supermodel.js',
-            'bower_components/marionette/lib/core/backbone.marionette.js',
-            'lib/backbone.marionette.handlebars/backbone.marionette.handlebars.js',
-            'lib/backbone-forms/distribution/backbone-forms.js',
-            'lib/backbone-forms/distribution/editors/list.js',
-            'lib/backbone-forms/distribution/templates/bootstrap.js',
-            'lib/microplugin/microplugin.js',
-            'lib/sifter/sifter.js',
-            'lib/selectize/selectize.js',
-            'lib/spin.js/spin.js',
-            'lib/ladda-bootstrap/ladda.js',
-            'lib/moment/moment.js',
-            'lib/jQuery-Mask-Plugin/jquery.mask.min.js',
-            'lib/placeholders/build/placeholders.js',
-            'lib/messenger/messenger.js',
-            'lib/messenger/messenger-theme-future.js'
-          ]
+          'public/js/vendors.min.js': js
         }
       },
       app: {
@@ -74,16 +85,7 @@ module.exports = function(grunt) {
     cssmin: {
       combine: {
         files: {
-          'public/css/app.css': [
-            'lib/bootstrap/bootstrap.css',
-            'bower_components/bootstrap-jasny/dist/extend/css/jasny-bootstrap.css',
-            'lib/font-awesome/css/font-awesome.css',
-            'lib/selectize/selectize.css',
-            'lib/ladda-bootstrap/ladda-themeless.css',
-            'lib/messenger/messenger.css',
-            'lib/messenger/messenger-theme-future.css',
-            'assets/css/custom.css'
-          ]
+          'public/css/app.css': css
         }
       }
     },
@@ -94,16 +96,7 @@ module.exports = function(grunt) {
           '<%= grunt.template.today("yyyy-mm-dd") %> */',
       },
       css: {
-        src: [
-          'lib/bootstrap/bootstrap.css',
-          'bower_components/bootstrap-jasny/dist/extend/css/jasny-bootstrap.css',
-          'lib/font-awesome/css/font-awesome.css',
-          'lib/selectize/selectize.css',
-          'lib/ladda-bootstrap/ladda-themeless.css',
-          'lib/messenger/messenger.css',
-          'lib/messenger/messenger-theme-future.css',
-          'assets/css/custom.css'
-        ],
+        src: css,
         dest: 'public/css/app.css',
       },
       app: {
@@ -113,34 +106,7 @@ module.exports = function(grunt) {
         dest: 'public/js/app.min.js',
       },
       jsDev: {
-        src: [
-          'lib/jquery/jquery.js',
-          'lib/handlebars/handlebars.js',
-          'lib/swag/swag.js',
-          'lib/underscore/underscore.js',
-          'lib/bootstrap/bootstrap.js',
-          'bower_components/bootstrap-jasny/dist/extend/js/jasny-bootstrap.js',
-          'lib/backbone/backbone.js',
-          'lib/backbone.wreqr/lib/backbone.wreqr.js',
-          'lib/backbone.babysitter/backbone.babysitter.js',
-          'lib/backbone.supermodel/build/backbone.supermodel.js',
-          'bower_components/marionette/lib/core/backbone.marionette.js',
-          'lib/backbone.marionette.handlebars/backbone.marionette.handlebars.js',
-          'lib/backbone-forms/distribution/backbone-forms.js',
-          'lib/backbone-forms/distribution/editors/list.js',
-          'lib/backbone-forms/distribution/templates/bootstrap.js',
-          'lib/microplugin/microplugin.js',
-          'lib/sifter/sifter.js',
-          'lib/selectize/selectize.js',
-          'lib/spin.js/spin.js',
-          'lib/ladda-bootstrap/ladda.js',
-          'lib/moment/moment.js',
-          'lib/jQuery-Mask-Plugin/jquery.mask.min.js',
-          'lib/placeholders/build/placeholders.js',
-          'bower_components/ie-alert/theplugin/iealert.js',
-          'lib/messenger/messenger.js',
-          'lib/messenger/messenger-theme-future.js'
-        ],
+        src: js,
         dest: 'public/js/vendors.min.js',
       },
     },
@@ -155,7 +121,7 @@ module.exports = function(grunt) {
               'lib/bootstrap/*.eot',
               'lib/bootstrap/*.ttf',
               'lib/bootstrap/*.woff',
-              'lib/font-awesome/fonts/*',
+              'lib/font-awesome/*',
             ],
             dest: 'public/fonts/',
             filter: 'isFile'
@@ -192,7 +158,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'lib/font-awesome/css/*.css'
+              'lib/font-awesome/*.css'
             ],
             dest: 'public/css/',
             filter: 'isFile'

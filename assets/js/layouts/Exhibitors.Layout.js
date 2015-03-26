@@ -1,6 +1,6 @@
 Exhibitors.module('Layout', function(Layout, App, Backbone, Marionette, $, _) {
 
-  Layout.Body = Marionette.Layout.extend({
+  Layout.Body = Marionette.LayoutView.extend({
     initialize: function(options){
       this.options = _.extend({login: false}, options);
       var view = this;

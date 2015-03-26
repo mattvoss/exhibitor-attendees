@@ -91,12 +91,12 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
 
   Views.EditAttendeesView = Marionette.CompositeView.extend({
       template: Templates.editForm,
-      itemView : Views.AttendeeFormView,
-      itemViewContainer: "#accordion",
+      childView : Views.AttendeeFormView,
+      childViewContainer: "#accordion",
       className: "row",
 
       initialize: function() {
-
+        var test;
       },
 
       onRender: function() {

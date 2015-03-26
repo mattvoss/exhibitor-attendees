@@ -433,7 +433,7 @@ exports.getBoothSize = function(req, res) {
       local_id: 13,
       event_id: opts.configs.get("uuid")
     }
-  }).success(function(field) {
+  }).then(function(field) {
     var booth = field.values.split("|")[req.params.pos],
         size = boothSize(booth),
         result = { "val": booth, "size": size  };
@@ -472,7 +472,7 @@ exports.addAttendee = function(req, res) {
 
   CheckinExhibitorAttendees.create(
     results
-  ).success(function(attendee) {
+  ).then(function(attendee) {
     console.log(attendee);
     createExhibitorModel(req.session.user, function(exhibitor) {
       req.session.user = exhibitor;
@@ -487,7 +487,7 @@ exports.addAttendee = function(req, res) {
 exports.updateAttendee = function(req, res) {
   CheckinExhibitorAttendees
   .find(req.body.id)
-  .success(function(attendee) {
+  .then(function(attendee) {
     //console.log(req.body);
     attendee.updateAttributes(
       req.body,
@@ -507,7 +507,7 @@ exports.updateAttendee = function(req, res) {
         'organization',
         'siteId'
       ]
-    ).success(function(attendee) {
+    ).then(function(attendee) {
       console.log(attendee);
       createExhibitorModel(req.session.user, function(exhibitor) {
         req.session.user = exhibitor;
@@ -536,12 +536,12 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
       var checkinBiller = billerInfo.values;
       checkinBiller.local_eventId = checkinBiller.eventId;
       checkinBiller.eventId = opts.configs.get("uuid");
-      CheckinBiller.create(checkinBiller).success(function(biller) {
+      CheckinBiller.create(checkinBiller).then(function(biller) {
         callback(null, biller);
       });
     },
     function(biller, callback){
-      RegBillerFieldValues.findAll({ where: {user_id: billerInfo.values.userId} }).success(function(regBillerValues) {
+      RegBillerFieldValues.findAll({ where: {user_id: billerInfo.values.userId} }).then(function(regBillerValues) {
         var checkinBillerValues = [];
         regBillerValues.forEach(function(values, index) {
           var vals = values.values;
@@ -551,7 +551,7 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
           checkinBillerValues.push(vals);
         });
 
-        CheckinBillerFieldValues.bulkCreate(checkinBillerValues).success(function(billerValues) {
+        CheckinBillerFieldValues.bulkCreate(checkinBillerValues).then(function(billerValues) {
           callback(null, {values: billerValues, biller: biller});
         });
       });
@@ -562,7 +562,7 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
           local_id: 13,
           event_id: opts.configs.get("uuid")
         }
-      }).success(function(field) {
+      }).then(function(field) {
         var arBooths = field.values.split("|"),
             totalAttendees = {
               "userId": exhibitor.biller.userId,
@@ -593,26 +593,26 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
             }
           });
         }
-        CheckinExhibitorAttendeeNumber.create(totalAttendees).success(function(number) {
+        CheckinExhibitorAttendeeNumber.create(totalAttendees).then(function(number) {
           callback(null, exhibitor);
         });
       });
     },
     function(exhibitor, callback){
-      RegEventFees.find({ where: {user_id: billerInfo.values.userId} }).success(function(regFees) {
+      RegEventFees.find({ where: {user_id: billerInfo.values.userId} }).then(function(regFees) {
         var checkinFees = regFees.values;
         checkinFees.local_id = checkinFees.id;
         checkinFees.event_id = opts.configs.get("uuid");
         checkinFees.id = null;
 
-        CheckinEventFees.create(checkinFees).success(function(fees) {
+        CheckinEventFees.create(checkinFees).then(function(fees) {
           exhibitor.fees = fees;
           callback(null, exhibitor);
         });
       });
     }/*,
     function(billerValues, callback){
-      RegGroupMembers.findAll({ where: {groupUserId: billerInfo.values.userId} }).success(function(regGroupMembers) {
+      RegGroupMembers.findAll({ where: {groupUserId: billerInfo.values.userId} }).then(function(regGroupMembers) {
         var checkinGroupMembers = [];
         regGroupMembers.forEach(function(member, index) {
           var person = member.values;
@@ -620,7 +620,7 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
           checkinGroupMembers.push(person);
         });
 
-        CheckinGroupMembers.bulkCreate(checkinGroupMembers).success(function(members) {
+        CheckinGroupMembers.bulkCreate(checkinGroupMembers).then(function(members) {
           callback(null, members);
         });
       });
@@ -630,7 +630,7 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
       members.forEach(function(member, index) {
         memberIds.push(member.values.groupMemberId);
       });
-      RegMemberFieldValues.findAll({ where: { member_id: { in: memberIds } } }).success(function(regMemberValues) {
+      RegMemberFieldValues.findAll({ where: { member_id: { in: memberIds } } }).then(function(regMemberValues) {
         var checkinMemberValues = [];
         regMemberValues.forEach(function(values, index) {
           var vals = values.values;
@@ -640,13 +640,13 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
           checkinMemberValues.push(vals);
         });
 
-        CheckinMemberFieldValues.bulkCreate(checkinMemberValues).success(function(memberValues) {
+        CheckinMemberFieldValues.bulkCreate(checkinMemberValues).then(function(memberValues) {
           callback(null, memberValues);
         });
       });
     }*/
   ],function(err, results) {
-    CheckinBiller.find(results.biller.id).success(function(biller) {
+    CheckinBiller.find(results.biller.id).then(function(biller) {
       console.log("biller found");
       cb(biller);
     });
@@ -690,7 +690,7 @@ var getExhibitorPayments = function(biller, callback) {
       user_id: biller.userId,
       event_id: opts.configs.get("uuid")
     }
-  }).success(function(payments) {
+  }).then(function(payments) {
     payments = (payments !== null) ? payments.toJSON() : [];
     callback(payments);
   });
@@ -708,13 +708,15 @@ var getBillerFieldValues = function(biller, cb) {
             "      AND biller_field_values.event_id = :eventId";
 
   db.checkin.query(
-    sql, null,
-    { raw: true },
+    sql,
     {
-      userId: biller.userId,
-      eventId: opts.configs.get("uuid")
+      replacements: {
+        userId: biller.userId,
+        eventId: opts.configs.get("uuid")
+      },
+      type: Sequelize.QueryTypes.SELECT
     }
-  ).success(function(fieldValues) {
+  ).then(function(fieldValues) {
     var convertToJson = function(item, cback) {
           var field = {
                 "label":item.name,
@@ -745,7 +747,7 @@ var getExhibitorAttendeesNumber = function(biller, callback) {
       userId: biller.userId,
       eventId: opts.configs.get("uuid")
     }
-  }).success(function(number) {
+  }).then(function(number) {
     callback(number.toJSON());
   });
 };
@@ -756,7 +758,7 @@ var updateExhibitorAttendeesNumber = function(biller, numAttendees, callback) {
       userId: biller.userId,
       eventId: opts.configs.get("uuid")
     }
-  }).success(function(number) {
+  }).then(function(number) {
     var update = {
           "attendees": parseInt(numAttendees, 10)
         };
@@ -765,7 +767,7 @@ var updateExhibitorAttendeesNumber = function(biller, numAttendees, callback) {
       [
         'attendees'
       ]
-    ).success(function(number) {
+    ).then(function(number) {
       callback(number.toJSON());
 
     });
@@ -778,7 +780,7 @@ var getExhibitorAttendees = function(biller, callback) {
       userId: biller.userId,
       eventId: opts.configs.get("uuid")
     }
-  }).success(function(attendees) {
+  }).then(function(attendees) {
     var convertToJson = function(item, cback) {
           cback(null, item.toJSON());
         };
@@ -794,7 +796,7 @@ var addExhibitor = function(confirmation, zip, numAttendees, callback) {
         biller = biller.toJSON();
         createExhibitorModel(biller, callback);
       };
-  CheckinBiller.find({ where: { confirmNum: confirmation, status: { gte: 0 } } }).success(function(biller) {
+  CheckinBiller.find({ where: { confirmNum: confirmation, status: { gte: 0 } } }).then(function(biller) {
     if (biller !== null) {
       CheckinBillerFieldValues.find({
         where: {
@@ -803,7 +805,7 @@ var addExhibitor = function(confirmation, zip, numAttendees, callback) {
           event_id: opts.configs.get("uuid"),
           value: { like: "%"+zip+"%" }
         }
-      }).success(function(billerFieldValues) {
+      }).then(function(billerFieldValues) {
         if (numAttendees) {
           updateExhibitorAttendeesNumber(
             biller,
@@ -817,7 +819,7 @@ var addExhibitor = function(confirmation, zip, numAttendees, callback) {
         }
       });
     } else {
-      RegBiller.find({ where: { confirmNum: confirmation, status: { gte: 0 } } }).success(function(biller) {
+      RegBiller.find({ where: { confirmNum: confirmation, status: { gte: 0 } } }).then(function(biller) {
         if (biller !== null) {
 
           RegBillerFieldValues.find({
@@ -826,7 +828,7 @@ var addExhibitor = function(confirmation, zip, numAttendees, callback) {
               field_id: 8,
               value: { like: "%"+zip+"%" }
             }
-          }).success(function(billerFieldValues) {
+          }).then(function(billerFieldValues) {
             var cback = function(results) {
                   processExhibitor(results);
                 };

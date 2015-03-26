@@ -12,12 +12,39 @@ ReplaceRegion = Marionette.Region.extend({
 Swag.registerHelpers(Handlebars);
 
 $(document).on("click", "a:not([data-bypass])", function(evt) {
-  var href = { prop: $(this).prop("href"), attr: $(this).attr("href") };
-  var root = location.protocol + "//" + location.host + Backbone.history.options.root;
+  var href = $(this).attr('href'),
+      protocol = this.protocol + '//';
 
-  if (href.prop && href.prop.slice(0, root.length) === root) {
-    evt.preventDefault();
-    Backbone.history.navigate(href.attr, true);
+  // For <a href="#"> links, we always want to preventDefault to avoid having to do
+  // this within each individual Backbone View event function.
+  // (However don't preventDefault on #something URLs in case we need to jump down a page.)
+  if (href === '#') {
+      evt.preventDefault();
+  }
+
+  // Don't break cmd-click (windows: ctrl+click) opening in new tab
+  if (evt.metaKey || evt.ctrlKey) {
+      return;
+  }
+
+  // Ensure the protocol is not part of URL, meaning it's relative.
+  // We also don't want to do anything with links that start with "#" since we use push state
+
+  /*jshint scripturl:true*/
+  if (href && href.slice(0, protocol.length) !== protocol &&
+      href.indexOf('#') !== 0 &&
+      href.indexOf('javascript:') !== 0 &&
+      href.indexOf('mailto:') !== 0 &&
+      href.indexOf('tel:') !== 0
+     ) {
+      // Stop the default event to ensure the link will not cause a page
+      // refresh.
+      evt.preventDefault();
+
+      // `Backbone.history.navigate` is sufficient for all Routers and will
+      // trigger the correct events. The Router's internal `navigate` method
+      // calls this anyways.
+      Backbone.history.navigate(href, { trigger: true });
   }
 });
 
