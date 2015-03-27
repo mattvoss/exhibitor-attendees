@@ -760,11 +760,10 @@ var updateExhibitorAttendeesNumber = function(biller, numAttendees, callback) {
       eventId: opts.configs.get("uuid")
     }
   }).then(function(number) {
-    var update = {
-          "attendees": parseInt(numAttendees, 10)
-        };
     number.updateAttributes(
-      numAttendees
+      {
+        "attendees": parseInt(numAttendees, 10)
+      }
     ).then(function(number) {
       callback(number.toJSON());
 
