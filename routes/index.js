@@ -764,10 +764,7 @@ var updateExhibitorAttendeesNumber = function(biller, numAttendees, callback) {
           "attendees": parseInt(numAttendees, 10)
         };
     number.updateAttributes(
-      numAttendees,
-      [
-        'attendees'
-      ]
+      numAttendees
     ).then(function(number) {
       callback(number.toJSON());
 
