@@ -57,7 +57,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
       phone:      { type: 'Text', editorClass: 'form-control' },
       email:      { validators: ['required', 'email'], editorClass: 'form-control' },
       siteId:     {
-        title: 'Site ID - VPPPA Association Member Only',
+        title: 'Site ID - Only For VPPPA Association With Full Member Status',
         type: 'Text',
         editorClass: 'form-control',
         validators: [
