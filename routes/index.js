@@ -520,6 +520,43 @@ exports.updateAttendee = function(req, res) {
   });
 };
 
+exports.exportAttendees = function(req, res) {
+  var sql = "SELECT " +
+            "  exhibitorAttendees.id, " +
+            "  biller.confirmNum, " +
+            "  exhibitorAttendees.userId, " +
+            "  exhibitorAttendees.eventId, " +
+            "  exhibitorAttendees.firstname, " +
+            "  exhibitorAttendees.lastname, " +
+            "  exhibitorAttendees.address, " +
+            "  exhibitorAttendees.address2, " +
+            "  exhibitorAttendees.city, " +
+            "  exhibitorAttendees.state, " +
+            "  exhibitorAttendees.zip, " +
+            "  exhibitorAttendees.email, " +
+            "  exhibitorAttendees.title, " +
+            "  exhibitorAttendees.organization, " +
+            "  exhibitorAttendees.siteId, " +
+            "  exhibitorAttendees.phone, " +
+            "  exhibitorAttendees.created, " +
+            "  exhibitorAttendees.updated, " +
+            "  exhibitorAttendees.attend, " +
+            "  exhibitorAttendees.checked_in_time " +
+            "FROM exhibitorAttendees " +
+            "LEFT JOIN biller ON ( exhibitorAttendees.userId = biller.userId AND exhibitorAttendees.eventId = biller.eventId) " +
+            "ORDER BY biller.id, exhibitorAttendees.lastname ASC ";
+  db.checkin.query(
+    sql,
+    {
+      replacements: {},
+      type: Sequelize.QueryTypes.SELECT
+    }
+  ).then(function(attendees) {
+    res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+    res.csv(attendees, "attendeesExport.csv");
+  });
+};
+
 var boothSize = function(booth) {
   if (booth.indexOf("(10'X20')") > -1) {
     return 4;

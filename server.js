@@ -19,6 +19,7 @@
       path = require('path'),
       redis = require("redis"),
       url = require('url'),
+      json2csv = require('nice-json2csv'),
       config, configFile, opts = {}, userSockets = [], publicKey, privateKey,
       redisConfig = {
           "host": "localhost",
@@ -127,6 +128,7 @@
   app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
   app.use(methodOverride('X-HTTP-Method-Override')); // override with the X-HTTP-Method-Override header in the request
   app.use(cors());
+  app.use(json2csv.expressDecorator);
 
   var routes = require('./routes');
 
@@ -153,6 +155,7 @@
   apiRouter.get('/exhibitor/refresh', routes.refreshExhibitor);
   apiRouter.post('/exhibitor/:exhibitorId/attendee', routes.addAttendee);
   apiRouter.put('/exhibitor/:exhibitorId/attendee', routes.updateAttendee);
+  apiRouter.get('/exportAttendees', routes.exportAttendees);
   app.use('/api', apiRouter);
 
   /*  ==============================================================
