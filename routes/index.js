@@ -25,7 +25,7 @@ var fs = require('fs'),
     transport, acl,
     CheckinMemberFieldValues, RegMemberFieldValues, CheckinGroupMembers,
     RegGroupMembers, CheckinEventFields, CheckinBiller, RegBiller,
-    CheckinBillerFieldValues, RegBillerFieldValues, RegEventFees,
+    CheckinBillerFieldValues, RegBillerFieldValues, RegEventFees, Sites,
     CheckinEventFees, CheckinExhibitorAttendeeNumber, CheckinExhibitorAttendees;
 
 Swag.registerHelpers(handlebars);
@@ -318,6 +318,21 @@ exports.initialize = function() {
       checked_in_time :     { type: Sequelize.DATE }
     });
 
+    Sites = db.checkin.define('siteIds', {
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+      chapter:              { type: Sequelize.INTEGER(6) },
+      memberType:           { type: Sequelize.STRING(255) },
+      company:              { type: Sequelize.STRING(255) },
+      street1:              { type: Sequelize.STRING(255) },
+      street2:              { type: Sequelize.STRING(255) },
+      city:                 { type: Sequelize.STRING(255) },
+      state:                { type: Sequelize.STRING(255) },
+      zipCode:              { type: Sequelize.STRING(255) },
+      joinDate:             { type: Sequelize.DATE },
+      paidDate:             { type: Sequelize.DATE },
+      siteId:               { type: Sequelize.STRING(255) }
+    });
+
 };
 
 /************
@@ -517,6 +532,19 @@ exports.updateAttendee = function(req, res) {
         res.end('\n');
       });
     });
+  });
+};
+
+
+exports.findSiteId = function(req, res) {
+  var query = req.params.siteid;
+   Sites
+  .findAll({ where: ["siteId = ?", query] })
+  .success(function(siteids) {
+    res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+    res.writeHead(200, { 'Content-type': 'application/json' });
+    res.write(JSON.stringify(siteids), 'utf-8');
+    res.end('\n');
   });
 };
 

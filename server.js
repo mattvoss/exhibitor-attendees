@@ -156,6 +156,7 @@
   apiRouter.post('/exhibitor/:exhibitorId/attendee', routes.addAttendee);
   apiRouter.put('/exhibitor/:exhibitorId/attendee', routes.updateAttendee);
   apiRouter.get('/exportAttendees', routes.exportAttendees);
+  apiRouter.get('/siteid/:siteid', routes.findSiteId);
   app.use('/api', apiRouter);
 
   /*  ==============================================================
