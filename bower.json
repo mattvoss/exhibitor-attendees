@@ -2,7 +2,7 @@
   "name": "exhibitor-bower",
   "version": "0.1.0",
   "dependencies": {
-    "handlebars": "~2.0.*",
+    "handlebars": "~4.0.*",
     "bootstrap": "*",
     "underscore": "*",
     "marionette": "~2.0.*",
@@ -25,6 +25,6 @@
     "messenger": "*"
   },
   "resolutions": {
-    "handlebars": "~2.0.*"
+    "handlebars": "~4.0.*"
   }
 }

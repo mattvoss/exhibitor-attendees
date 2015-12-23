@@ -8,6 +8,7 @@ Exhibitors.module('Public', function(Public, App, Backbone, Marionette, $, _) {
   Public.Router = Marionette.AppRouter.extend({
     appRoutes: {
       'start': 'start',
+      'admin': 'admin',
       'logout': 'logout'
     }
   });
@@ -32,6 +33,14 @@ Exhibitors.module('Public', function(Public, App, Backbone, Marionette, $, _) {
       this.showPublic();
     },
 
+    admin: function() {
+      App.user = new App.Models.User();
+      var options = {login: true};
+      this.appBody = new App.Layout.Body(options);
+      App.body.show(this.appBody);
+      this.showAdmin();
+    },
+
     showHeader: function(options) {
       options = options || {};
       var header = new App.Layout.Header(options);
@@ -47,6 +56,12 @@ Exhibitors.module('Public', function(Public, App, Backbone, Marionette, $, _) {
 
     showPublic: function() {
       var view = new Public.Views.PublicView();
+      this.appBody.login.show(view);
+      this.appBody.login.$el.show();
+    },
+
+    showAdmin: function() {
+      var view = new Public.Views.AdminView();
       this.appBody.login.show(view);
       this.appBody.login.$el.show();
     },

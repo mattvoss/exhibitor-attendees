@@ -144,15 +144,23 @@
   router.get('/', routes.index);
   router.get('/start', routes.index);
   router.get('/edit', routes.index);
+  router.get('/edit/:exhibitorId', routes.index);
+  router.get('/admin', routes.index);
+  router.get('/admin-dashboard', routes.index);
   app.use('/', router);
 
   //API
   apiRouter.post('/exhibitor/authenticate', routes.authUser);
+  apiRouter.post('/user/authenticate', routes.authUser);
+  apiRouter.get('/user/:userId', routes.getUser);
   apiRouter.get('/exhibitor/:confirmation/:zipcode/changeAttendees/:attendees', routes.updateAttendeeNumber);
   apiRouter.get('/user/authenticate/logout', routes.logoutUser);
   apiRouter.delete('/exhibitor/:userId', routes.logoutUser);
   apiRouter.get('/getbooths/:pos', routes.getBoothSize);
   apiRouter.get('/exhibitor/refresh', routes.refreshExhibitor);
+  apiRouter.post('/exhibitor', routes.addExhibitor);
+  apiRouter.get('/exhibitor/:exhibitorId', routes.getExhibitor);
+  apiRouter.put('/exhibitor/:exhibitorId', routes.updateExhibitor);
   apiRouter.post('/exhibitor/:exhibitorId/attendee', routes.addAttendee);
   apiRouter.put('/exhibitor/:exhibitorId/attendee', routes.updateAttendee);
   apiRouter.get('/exportAttendees', routes.exportAttendees);

@@ -38,9 +38,9 @@ Exhibitors.on('start', function() {
   this.currentView = null;
 
   Backbone.history.start({pushState: true});
-  if (typeof this.user !== 'undefined' && "id" in this.user) {
+  if (typeof this.user !== 'undefined' && "id" in this.user && Backbone.history.location.pathname.indexOf("admin") === -1) {
     Backbone.history.navigate("edit", { trigger: true });
-  } else {
+  } else if (Backbone.history.location.pathname.indexOf("admin") === -1) {
     Backbone.history.navigate("start", { trigger: true });
   }
 });

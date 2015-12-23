@@ -82,8 +82,63 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
 
   });
 
+  Models.Exhibitor = Backbone.SuperModel.extend({
+    urlRoot: '/api/exhibitor',
+    idAttribute: "id",
+    schema: {
+      confirmation: { title: 'Confirmation', type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      firstname:  { title: 'First Name', type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      lastname:   { title: 'Last Name', type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      title:      { type: 'Text', editorClass: 'form-control' },
+      organization: { type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      address:    { title: 'Street Address', type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      address2:   { title: 'Street Address 2', type: 'Text', editorClass: 'form-control' },
+      city:       { type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      state:      {
+        title: 'State/Province',
+        type: 'Select',
+        options: Models.states,
+        editorClass: 'form-control',
+        validators: [
+            'required',
+            function checkDropDown(value, formValues) {
+                var err = {
+                    type: 'state',
+                    message: 'A state/province must be selected'
+                };
+
+                if (value === "false") { return err; }
+            }
+        ]
+      },
+      zip:        { type: 'Text', validators: ['required'], editorClass: 'form-control' },
+      phone:      { type: 'Text', editorClass: 'form-control' },
+      email:      { validators: ['required', 'email'], editorClass: 'form-control' },
+      siteId:     {
+        title: 'Site ID - Only For VPPPA Association With Full Member Status',
+        type: 'Text',
+        editorClass: 'form-control',
+        validators: [
+            function checkSiteId(value, formValues) {
+                var err = {
+                    type: 'siteId',
+                    message: 'Site ID must be 6 digits and only numeric'
+                };
+
+                if (value.length > 0 && value.length !== 6 && !(/^\d+$/.test(value))) { return err; }
+            }
+        ]
+      },
+      attendees:  { title: '# Attendees', type: 'Text', validators: ['required'], editorClass: 'form-control' },
+    }
+  });
+
   Models.Attendees = Backbone.Collection.extend({
     model: Models.Attendee
+  });
+
+  Models.Exhibitors = Backbone.Collection.extend({
+    model: Models.Exhibitor
   });
 
   Models.User = Backbone.SuperModel.extend({
@@ -91,23 +146,36 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
     urlRoot: '/api/exhibitor',
     idAttribute: "id",
     defaults: {
-      zipcode: '',
-      confirmation: ''
+      confirmation: '',
+      admin: false
     },
     relations: {
-      'attendees': Models.Attendees
+      'attendeesList': Models.Attendees,
+      'exhibitors': Models.Exhibitors
     },
     validate: function(attrs, options) {
-      if (attrs.zipcode.length < 5) {
-        return {
-          "error": "zipcode",
-          "message": "Zip code must be at least 5 digits long"
-        };
-      } else if (attrs.confirmation === "") {
-        return {
-          "error": "confirmation",
-          "message": "A confirmation number must be entered"
-        };
+      switch (attrs.admin) {
+        case true:
+          if (attrs.email === "") {
+            return {
+              "error": "email",
+              "message": "An email address must be entered"
+            };
+          } else if (attrs.password === "") {
+            return {
+              "error": "password",
+              "message": "A password must be entered"
+            };
+          }
+          break;
+        case false:
+          if (attrs.confirmation === "") {
+            return {
+              "error": "confirmation",
+              "message": "A confirmation number must be entered"
+            };
+          }
+          break;
       }
     },
     initialize: function() {

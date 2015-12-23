@@ -7,6 +7,7 @@ var fs = require('fs'),
     crypto = require('crypto'),
     spawn = require('child_process').spawn,
     async = require('async'),
+    bcrypt = require('bcrypt'),
     uuid = require("node-uuid"),
     glob = require('glob'),
     underscore = require('underscore'),
@@ -24,8 +25,8 @@ var fs = require('fs'),
     hmac, signature, connection, client,
     transport, acl,
     CheckinMemberFieldValues, RegMemberFieldValues, CheckinGroupMembers,
-    RegGroupMembers, CheckinEventFields, CheckinBiller, RegBiller,
-    CheckinBillerFieldValues, RegBillerFieldValues, RegEventFees, Sites,
+    RegGroupMembers, CheckinEventFields, CheckinBiller, RegBiller, Exhibitors,
+    CheckinBillerFieldValues, RegBillerFieldValues, RegEventFees, Sites, Users,
     CheckinEventFees, CheckinExhibitorAttendeeNumber, CheckinExhibitorAttendees;
 
 Swag.registerHelpers(handlebars);
@@ -329,6 +330,34 @@ exports.initialize = function() {
       siteId:               { type: Sequelize.STRING(255) }
     });
 
+    Exhibitors = db.checkin.define('exhibitors', {
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+      confirmation :        { type: Sequelize.STRING(255) },
+      booths :              { type: Sequelize.STRING(255) },
+      attendees:             { type: Sequelize.INTEGER, defaultValue: 0},
+      firstname :           { type: Sequelize.STRING(255) },
+      lastname :            { type: Sequelize.STRING(255) },
+      address :             { type: Sequelize.STRING(255) },
+      address2 :            { type: Sequelize.STRING(255) },
+      city :                { type: Sequelize.STRING(255) },
+      state :               { type: Sequelize.STRING(255) },
+      zip :                 { type: Sequelize.STRING(15) },
+      email :               { type: Sequelize.STRING(255) },
+      phone :               { type: Sequelize.STRING(25) },
+      title :               { type: Sequelize.STRING(255) },
+      organization :        { type: Sequelize.STRING(255) },
+      created :             { type: Sequelize.DATE },
+      updated :             { type: Sequelize.DATE },
+      siteId :              { type: Sequelize.STRING(10) }
+    });
+
+    Users = db.checkin.define('users', {
+      id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+      email :               { type: Sequelize.STRING(255) },
+      password :            { type: Sequelize.STRING(255) },
+      firstName :           { type: Sequelize.STRING(255) },
+      lastName :            { type: Sequelize.STRING(255) }
+    });
 };
 
 /************
@@ -354,7 +383,10 @@ exports.index = function(req, res){
 
 exports.refreshExhibitor = function(req, res) {
   createExhibitorModel(req.session.user, function(exhibitor) {
-    req.session.user = exhibitor;
+    console.log("user", req.session.user);
+    if (!req.session.user.admin) {
+      req.session.user = exhibitor;
+    }
     res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
     res.writeHead(200, { 'Content-type': 'application/json' });
     res.write(JSON.stringify(exhibitor), 'utf-8');
@@ -367,11 +399,11 @@ exports.refreshExhibitor = function(req, res) {
 //Auth a user
 exports.authUser = function(req, res) {
   var request = req,
-      sendBack = function(exhibitor) {
-        req.session.user = exhibitor;
+      sendBack = function(record) {
+        req.session.user = record;
         res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
         res.writeHead(200, { 'Content-type': 'application/json' });
-        res.write(JSON.stringify(exhibitor), 'utf-8');
+        res.write(JSON.stringify(record), 'utf-8');
         res.end('\n');
       },
       sendBackError = function() {
@@ -393,14 +425,222 @@ exports.authUser = function(req, res) {
           sendBackError();
         }
       };
+  if (req.body.admin) {
+    Users.find({ where: { email: req.body.email } }).then(function(user) {
+      if (user !== null) {
+        bcrypt.compare(req.body.password, user.password, function(err, result) {
+          if (result) {
+            user = user.get();
+            user.admin = true;
+            Exhibitors.findAll({
+              order: [
+                ['organization', 'ASC']
+              ]
+            }).then(
+              function(exhibitors) {
+                user.exhibitors = exhibitors;
+                sendBack(user);
+              },
+              function(error) {
+                console.log(error);
+                sendBackError();
+              }
+            );
+          } else {
+            sendBackError();
+          }
+        });
+      } else {
+        sendBackError();
+      }
+    });
+  } else {
+    Exhibitors.find(
+      {
+        where: {
+          confirmation: req.body.confirmation
+        }
+      }
+    ).then(
+      function(exhibitor) {
+        exhibitor = exhibitor.get();
+        createExhibitorModel(exhibitor, sendBack);
+      },
+      function(error) {
+        console.log(error);
+        sendBackError();
+      }
+    );
+  }
+};
 
-  addExhibitor(req.body.confirmation, req.body.zipcode, null, cback);
+exports.getUser = function(req, res) {
+  var request = req,
+      sendBack = function(record) {
+        req.session.user = record;
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(200, { 'Content-type': 'application/json' });
+        res.write(JSON.stringify(record), 'utf-8');
+        res.end('\n');
+      },
+      sendBackError = function() {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(401, { 'Content-type': 'application/json' });
+        var errorMsg = {
+              status: "error",
+              messsage: {
+                response: "Unable to authenticate user"
+              }
+            };
+        res.write(JSON.stringify(errorMsg), 'utf-8');
+        res.end('\n');
+      },
+      cback = function(exhibitor) {
+        if (exhibitor) {
+          sendBack(exhibitor);
+        } else {
+          sendBackError();
+        }
+      };
+  var user = {
+      id: 1,
+      firstname: "Matthew",
+      lastname: "Voss",
+      exhibitors: [],
+      admin: true
+    };
+    Exhibitors.findAll({
+      order: [
+        ['organization', 'ASC']
+      ]
+    }).then(
+      function(exhibitors) {
+        user.exhibitors = exhibitors;
+        sendBack(user);
+      },
+      function(error) {
+        console.log(error);
+        sendBackError();
+      }
+    );
+};
+
+exports.getExhibitor = function(req, res) {
+  var request = req,
+      sendBack = function(exhibitor) {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(200, { 'Content-type': 'application/json' });
+        res.write(JSON.stringify(exhibitor), 'utf-8');
+        res.end('\n');
+      },
+      sendBackError = function() {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(401, { 'Content-type': 'application/json' });
+        var errorMsg = {
+              status: "error",
+              messsage: {
+                response: "Unable to authenticate user"
+              }
+            };
+        res.write(JSON.stringify(errorMsg), 'utf-8');
+        res.end('\n');
+      };
+  Exhibitors.find(
+    {
+      where: {
+        id: req.params.exhibitorId
+      }
+    }
+  ).then(
+    function(exhibitor) {
+      exhibitor = exhibitor.get();
+      createExhibitorModel(exhibitor, sendBack);
+    },
+    function(error) {
+      console.log(error);
+      sendBackError();
+    }
+  );
+};
+
+exports.updateExhibitor = function(req, res) {
+  var request = req,
+      sendBack = function(exhibitor) {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(200, { 'Content-type': 'application/json' });
+        res.write(JSON.stringify(exhibitor), 'utf-8');
+        res.end('\n');
+      },
+      sendBackError = function() {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(401, { 'Content-type': 'application/json' });
+        var errorMsg = {
+              status: "error",
+              messsage: {
+                response: "Unable to authenticate user"
+              }
+            };
+        res.write(JSON.stringify(errorMsg), 'utf-8');
+        res.end('\n');
+      };
+  Exhibitors.find(
+    {
+      where: {
+        id: req.params.exhibitorId
+      }
+    }
+  ).then(
+    function(exhibitor) {
+      exhibitor.update(req.body).then(
+        function(exhibitor) {
+          exhibitor = exhibitor.get();
+          var update = underscore.findWhere(req.session.user.exhibitors, {id: parseInt(req.params.exhibitorId, 10)});
+          console.log("Exhibitor", req.params.exhibitorId, update);
+          underscore.extend(update, exhibitor);
+          sendBack(exhibitor);
+        },
+        function(error) {
+          console.log(error);
+          sendBackError();
+        }
+      );
+    },
+    function(error) {
+      console.log(error);
+      sendBackError();
+    }
+  );
+};
+
+exports.addExhibitor = function(req, res) {
+  var request = req,
+      sendBack = function(exhibitor) {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(200, { 'Content-type': 'application/json' });
+        res.write(JSON.stringify(exhibitor), 'utf-8');
+        res.end('\n');
+      },
+      sendBackError = function() {
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(401, { 'Content-type': 'application/json' });
+        var errorMsg = {
+              status: "error",
+              messsage: {
+                response: "Unable to authenticate user"
+              }
+            };
+        res.write(JSON.stringify(errorMsg), 'utf-8');
+        res.end('\n');
+      };
+  addNewExhibitor(req.body, sendBack);
 };
 
 exports.updateAttendeeNumber = function(req, res) {
   var request = req,
       sendBack = function(exhibitor) {
-        req.session.user = exhibitor;
+        if (!req.session.user.admin) {
+          req.session.user = exhibitor;
+        }
         res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
         res.writeHead(200, { 'Content-type': 'application/json' });
         res.write(JSON.stringify(exhibitor), 'utf-8');
@@ -459,7 +699,6 @@ exports.getBoothSize = function(req, res) {
 exports.addAttendee = function(req, res) {
   var vals = [
         'userId',
-        'eventId',
         'firstname',
         'lastname',
         'address',
@@ -486,7 +725,9 @@ exports.addAttendee = function(req, res) {
   ).then(function(attendee) {
     console.log(attendee);
     createExhibitorModel(req.session.user, function(exhibitor) {
-      req.session.user = exhibitor;
+      if (!req.session.user.admin) {
+        req.session.user = exhibitor;
+      }
       res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
       res.writeHead(200, { 'Content-type': 'application/json' });
       res.write(JSON.stringify(attendee), 'utf-8');
@@ -504,7 +745,6 @@ exports.updateAttendee = function(req, res) {
       req.body,
       [
         'userId',
-        'eventId',
         'firstname',
         'lastname',
         'address',
@@ -521,7 +761,9 @@ exports.updateAttendee = function(req, res) {
     ).then(function(attendee) {
       console.log(attendee);
       createExhibitorModel(req.session.user, function(exhibitor) {
-        req.session.user = exhibitor;
+        if (!req.session.user.admin) {
+          req.session.user = exhibitor;
+        }
         res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
         res.writeHead(200, { 'Content-type': 'application/json' });
         res.write(JSON.stringify(attendee), 'utf-8');
@@ -715,30 +957,12 @@ var importExhibitor = function(billerInfo, numAttendees, cb) {
   });
 };
 
-var createExhibitorModel = function(biller, cb) {
+var createExhibitorModel = function(exhibitor, cb) {
    async.waterfall([
-    function(callback){
-      getExhibitorPayments(biller, function(payments) {
-        biller.payments = payments;
-        callback(null, biller);
-      });
-    },
-    function(biller, callback) {
-      getBillerFieldValues(biller, function(values) {
-        biller.fieldValues = values;
-        callback(null, biller);
-      });
-    },
-    function(biller, callback) {
-      getExhibitorAttendeesNumber(biller, function(number) {
-        biller.totalAttendees = number;
-        callback(null, biller);
-      });
-    },
-    function(biller, callback) {
-      getExhibitorAttendees(biller, function(attendees) {
-        biller.attendees = attendees;
-        callback(null, biller);
+    function(callback) {
+      getExhibitorAttendees(exhibitor, function(attendees) {
+        exhibitor.attendeesList = attendees;
+        callback(null, exhibitor);
       });
     }
   ],function(err, results) {
@@ -832,11 +1056,10 @@ var updateExhibitorAttendeesNumber = function(biller, numAttendees, callback) {
   });
 };
 
-var getExhibitorAttendees = function(biller, callback) {
+var getExhibitorAttendees = function(exhibitor, callback) {
   CheckinExhibitorAttendees.findAll({
     where: {
-      userId: biller.userId,
-      eventId: opts.configs.get("uuid")
+      userId: exhibitor.id
     }
   }).then(function(attendees) {
     var convertToJson = function(item, cback) {
@@ -848,57 +1071,14 @@ var getExhibitorAttendees = function(biller, callback) {
   });
 };
 
-var addExhibitor = function(confirmation, zip, numAttendees, callback) {
-  numAttendees = numAttendees || null;
-  var processExhibitor = function(biller) {
-        biller = biller.toJSON();
-        createExhibitorModel(biller, callback);
-      };
-  CheckinBiller.find({ where: { confirmNum: confirmation, status: { gte: 0 } } }).then(function(biller) {
-    if (biller !== null) {
-      CheckinBillerFieldValues.find({
-        where: {
-          user_id: biller.get("userId"),
-          field_id: 8,
-          event_id: opts.configs.get("uuid"),
-          value: { like: "%"+zip+"%" }
-        }
-      }).then(function(billerFieldValues) {
-        if (numAttendees) {
-          updateExhibitorAttendeesNumber(
-            biller,
-            numAttendees,
-            function(number) {
-              processExhibitor(biller);
-            }
-          );
-        } else {
-          processExhibitor(biller);
-        }
-      });
-    } else {
-      RegBiller.find({ where: { confirmNum: confirmation, status: { gte: 0 } } }).then(function(biller) {
-        if (biller !== null) {
-
-          RegBillerFieldValues.find({
-            where: {
-              user_id: biller.get("userId"),
-              field_id: 8,
-              value: { like: "%"+zip+"%" }
-            }
-          }).then(function(billerFieldValues) {
-            var cback = function(results) {
-                  processExhibitor(results);
-                };
-            importExhibitor(biller, numAttendees, cback);
-          });
-
-        } else {
-          callback(null);
-        }
-      });
+var addNewExhibitor = function(payload, callback) {
+  Exhibitors.create(
+    payload
+  ).then(
+    function(exhibitor) { // Notice: There are no arguments here, as of right now you'll have to...
+      callback(exhibitor);
     }
-  });
+  );
 };
 
 function pad(num, size) {

@@ -17,7 +17,6 @@ Exhibitors.module('Public.Views', function(Views, App, Backbone, Marionette, $, 
       },
 
       ui: {
-        zipcode: '#zipcode',
         confirmation: '#confirmation'
       },
 
@@ -34,7 +33,7 @@ Exhibitors.module('Public.Views', function(Views, App, Backbone, Marionette, $, 
       onInputKeypress: function(evt) {
         var ENTER_KEY = 13;
 
-        if (evt.which === ENTER_KEY && this.ui.zipcode.val().length > 0) {
+        if (evt.which === ENTER_KEY && this.ui.confirmation.val().length > 0) {
           this.logIn(evt);
         }
       },
@@ -42,7 +41,6 @@ Exhibitors.module('Public.Views', function(Views, App, Backbone, Marionette, $, 
       showAlert: function(model) {
         var alert = new App.Public.Views.AlertView({model: model});
         $("#confirmation", this.$el).removeClass("alert-danger");
-        $("#zipcode", this.$el).removeClass("alert-danger");
         $(".alert", this.$el).remove();
         alert.render();
         $("#"+model.get("error"), this.$el).addClass("alert-danger");
@@ -52,7 +50,6 @@ Exhibitors.module('Public.Views', function(Views, App, Backbone, Marionette, $, 
       logIn: function(e) {
         var view = this;
         App.user.set({
-          zipcode: this.ui.zipcode.val().trim(),
           confirmation: this.ui.confirmation.val().trim()
         });
         if (App.user.isValid()) {
@@ -69,11 +66,95 @@ Exhibitors.module('Public.Views', function(Views, App, Backbone, Marionette, $, 
               error: function(model, xhr, options) {
                 var alertModel = new Backbone.Model({
                       'error': 'login',
-                      'message': 'The Zip Code or Confirmation Number entered did not match'
+                      'message': 'The confirmation number could not be found'
                     });
                 alert = new App.Public.Views.AlertView({model: alertModel});
                 $("#confirmation", view.$el).removeClass("alert-danger");
-                $("#zipcode", view.$el).removeClass("alert-danger");
+                $(".alert", view.$el).remove();
+                alert.render();
+                $(alert.$el).insertBefore(".login-title", this.$el);
+              }
+            }
+          );
+        } else {
+          var model = new Backbone.Model(App.user.validationError);
+          this.showAlert(model);
+        }
+      },
+
+      update: function() {
+
+      }
+
+  });
+
+  Views.AdminView = Marionette.ItemView.extend({
+      template: Templates.admin,
+      className: "row",
+      events: {
+        'keypress #confirmation'  :   'onInputKeypress',
+        'click .sign-in'      :   'logIn',
+      },
+
+      ui: {
+        email: '#email',
+        password: '#password'
+      },
+
+      initialize: function() {
+
+      },
+
+      onRender: function() {
+        //App.main.$el.removeClass('container').addClass('jumbotron');
+        //App.header.$el.hide();
+        //App.footer.$el.hide();
+      },
+
+      onInputKeypress: function(evt) {
+        var ENTER_KEY = 13;
+
+        if (evt.which === ENTER_KEY && this.ui.password.val().length > 0) {
+          this.logIn(evt);
+        }
+      },
+
+      showAlert: function(model) {
+        var alert = new App.Public.Views.AlertView({model: model});
+        $("#username", this.$el).removeClass("alert-danger");
+        $("#password", this.$el).removeClass("alert-danger");
+        $(".alert", this.$el).remove();
+        alert.render();
+        $("#"+model.get("error"), this.$el).addClass("alert-danger");
+        $(alert.$el).insertBefore(".login-title", this.$el);
+      },
+
+      logIn: function(e) {
+        var view = this;
+        App.user.set({
+          admin: true,
+          email: this.ui.email.val().trim(),
+          password: this.ui.password.val().trim()
+        });
+        if (App.user.isValid()) {
+          App.user.urlRoot = "/api/user/authenticate";
+
+          App.user.save(
+            {},
+            {
+              success: function(model, response, options) {
+                //App.login.$el.hide();
+                App.user.urlRoot = "/api/user";
+                Backbone.history.navigate("admin-dashboard", { trigger: true });
+              },
+              error: function(model, xhr, options) {
+                var alertModel = new Backbone.Model({
+                      'error': 'login',
+                      'message': 'The confirmation number could not be found'
+                    });
+                alert = new App.Public.Views.AlertView({model: alertModel});
+                $("#username", this.$el).removeClass("alert-danger");
+                $("#password", this.$el).removeClass("alert-danger");
                 $(".alert", view.$el).remove();
                 alert.render();
                 $(alert.$el).insertBefore(".login-title", this.$el);

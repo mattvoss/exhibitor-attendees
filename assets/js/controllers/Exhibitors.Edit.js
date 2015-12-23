@@ -8,7 +8,8 @@ Exhibitors.module('Edit', function(Edit, App, Backbone, Marionette, $, _) {
   Edit.Router = Marionette.AppRouter.extend({
     appRoutes: {
       ''          : 'init',
-      'edit'      : 'init'
+      'edit'      : 'init',
+      'edit/:id'  : 'init'
     }
   });
 
@@ -25,36 +26,68 @@ Exhibitors.module('Edit', function(Edit, App, Backbone, Marionette, $, _) {
 
   _.extend(Edit.Controller.prototype, {
 
-    init: function() {
-      if (typeof App.user == 'undefined') {
+    init: function(id) {
+      id = id || null;
+      console.log(id);
+      if (typeof App.user == 'undefined' && Backbone.history.location.pathname.indexOf("admin") === -1) {
         Backbone.history.navigate("start", { trigger: true });
+      } else if (App.user.get("admin") && Backbone.history.location.pathname.indexOf("/admin") > -1) {
+        Backbone.history.navigate("admin-dashboard", { trigger: true });
       } else {
         var options = {login: false};
         this.appBody = new App.Layout.Body(options);
         App.body.show(this.appBody);
         this.showHeader();
-        this.showEdit();
+        this.showEdit(id);
       }
     },
 
-    showEdit: function() {
+    showEdit: function(id) {
       App.attendees = new App.Models.Attendees();
-      var numberAttendeesToAdd = App.user.get("totalAttendees").get('attendees') - App.user.get('attendees').length;
-      for (i = 0; i < numberAttendeesToAdd; i++) {
-        var mod = new App.Models.Attendee(App.user.get("fieldValues").toJSON());
-        mod.set({
-          firstname: "Attendee",
-          lastname: "#"+(i+1).toString(),
-          userId: App.user.get("userId"),
-          eventId: App.user.get("eventId")
-        });
-        //mod.parent = App.user;
-        App.user.get('attendees').add(mod);
+      var view = this,
+          finish = function(exhibitor) {
+            var currNumAttendees = (exhibitor.get('attendeesList')) ? exhibitor.get('attendeesList').length : 0,
+                numberAttendeesToAdd = exhibitor.get('attendees') - currNumAttendees;
+            console.log(numberAttendeesToAdd);
+            for (i = 0; i < numberAttendeesToAdd; i++) {
+              var attendee = exhibitor.toJSON();
+              delete attendee.attendeesList;
+              delete attendee.id;
+              var mod = new App.Models.Attendee(attendee);
+              mod.set({
+                firstname: "Attendee",
+                lastname: "#"+(i+1).toString(),
+                userId: exhibitor.get("id")
+              });
+              //mod.parent = App.user;
+              exhibitor.get('attendeesList').add(mod);
+            }
+            if (id) {
+              exhibitor.set("admin", true);
+            }
+            var editAttendees = new Edit.Views.EditAttendeesView({model: exhibitor, collection: exhibitor.get('attendeesList')});
+            $("#main").addClass("dashboard");
+            view.appBody.main.show(editAttendees);
+            $("body").removeClass();
+          };
+
+      if (id) {
+        var exhibitor = new App.Models.User({id: id, admin: true});
+        exhibitor.fetch(
+          {
+            reset: true,
+            success: function (collection, response, options) {
+              finish(exhibitor);
+            },
+            error: function (collection, response, options) {
+                // you can pass additional options to the event you trigger here as well
+                self.trigger('errorOnFetch');
+            }
+          }
+        );
+      } else {
+        finish(App.user);
       }
-      var editAttendees = new Edit.Views.EditAttendeesView({model: App.user, collection: App.user.get('attendees')});
-      $("#main").addClass("dashboard");
-      this.appBody.main.show(editAttendees);
-      $("body").removeClass();
 
       //$("#dash-container").show();
     },
@@ -79,7 +112,7 @@ Exhibitors.module('Edit', function(Edit, App, Backbone, Marionette, $, _) {
       controller: controller
     });
 
-    controller.init();
+    //controller.init();
 
   });
 

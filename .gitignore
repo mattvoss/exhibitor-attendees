@@ -5,3 +5,5 @@ vendors/
 config/config.json
 config/settings.json
 public/
+/scripts/genPasswordHash.js
+/data/exhibitors.csv
