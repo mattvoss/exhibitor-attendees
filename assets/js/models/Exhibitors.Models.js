@@ -122,10 +122,10 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
             function checkSiteId(value, formValues) {
                 var err = {
                     type: 'siteId',
-                    message: 'Site ID must be 6 digits and only numeric'
+                    message: 'Site ID must be at least 6 digits and only numeric'
                 };
 
-                if (value.length > 0 && value.length !== 6 && !(/^\d+$/.test(value))) { return err; }
+                if (value.length > 0 && value.length <= 8 && !(/^\d+$/.test(value))) { return err; }
             }
         ]
       },
