@@ -759,7 +759,7 @@ exports.updateAttendee = function(req, res) {
         'siteId'
       ]
     ).then(function(attendee) {
-      console.log(attendee);
+      console.log(req.session);
       if (!req.session.user.admin) {
         createExhibitorModel(req.session.user, function(exhibitor) {
           req.session.user = exhibitor;
