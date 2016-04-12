@@ -738,7 +738,7 @@ exports.addAttendee = function(req, res) {
 
 exports.updateAttendee = function(req, res) {
   CheckinExhibitorAttendees
-  .find(req.body.id)
+  .findById(req.body.id)
   .then(function(attendee) {
     //console.log(req.body);
     attendee.updateAttributes(
