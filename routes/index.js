@@ -760,15 +760,20 @@ exports.updateAttendee = function(req, res) {
       ]
     ).then(function(attendee) {
       console.log(attendee);
-      createExhibitorModel(req.session.user, function(exhibitor) {
-        if (!req.session.user.admin) {
+      if (!req.session.user.admin) {
+        createExhibitorModel(req.session.user, function(exhibitor) {
           req.session.user = exhibitor;
-        }
+          res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+          res.writeHead(200, { 'Content-type': 'application/json' });
+          res.write(JSON.stringify(attendee), 'utf-8');
+          res.end('\n');
+        });
+      } else {
         res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
         res.writeHead(200, { 'Content-type': 'application/json' });
         res.write(JSON.stringify(attendee), 'utf-8');
         res.end('\n');
-      });
+      }
     });
   });
 };
