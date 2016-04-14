@@ -32,6 +32,7 @@ Exhibitors.module('Public.Views', function(Views, App, Backbone, Marionette, $, 
 
       onInputKeypress: function(evt) {
         var ENTER_KEY = 13;
+        var view = this;
         evt.stopImmediatePropagation();
         if (evt.which === ENTER_KEY && this.ui.confirmation.val().length > 0) {
           this.logIn(evt);
