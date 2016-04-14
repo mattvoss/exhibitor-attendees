@@ -463,8 +463,12 @@ exports.authUser = function(req, res) {
       }
     ).then(
       function(exhibitor) {
-        exhibitor = exhibitor.get();
-        createExhibitorModel(exhibitor, sendBack);
+        if (exhibitor) {
+          exhibitor = exhibitor.get();
+          createExhibitorModel(exhibitor, sendBack);
+        } else {
+          sendBackError();
+        }
       },
       function(error) {
         console.log(error);
