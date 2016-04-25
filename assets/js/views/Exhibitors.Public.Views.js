@@ -36,7 +36,7 @@ Exhibitors.module('Public.Views', function(Views, App, Backbone, Marionette, $, 
         evt.stopImmediatePropagation();
         if (evt.which === ENTER_KEY && this.ui.confirmation.val().length > 0) {
           this.logIn(evt);
-        } else {
+        } else if(evt.which === ENTER_KEY)  {
           var alertModel = new Backbone.Model({
                 'error': 'login',
                 'message': 'The confirmation number could not be found'
