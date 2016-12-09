@@ -28,7 +28,7 @@ Exhibitors.module('Edit', function(Edit, App, Backbone, Marionette, $, _) {
 
     init: function(id) {
       id = id || null;
-      console.log(id);
+      //console.log(id);
       if (typeof App.user == 'undefined' && Backbone.history.location.pathname.indexOf("admin") === -1) {
         Backbone.history.navigate("start", { trigger: true });
       } else if (App.user.get("admin") && Backbone.history.location.pathname.indexOf("/admin") > -1) {
@@ -48,7 +48,7 @@ Exhibitors.module('Edit', function(Edit, App, Backbone, Marionette, $, _) {
           finish = function(exhibitor) {
             var currNumAttendees = (exhibitor.get('attendeesList')) ? exhibitor.get('attendeesList').length : 0,
                 numberAttendeesToAdd = exhibitor.get('attendees') - currNumAttendees;
-            console.log(numberAttendeesToAdd);
+            //console.log(numberAttendeesToAdd);
             for (i = 0; i < numberAttendeesToAdd; i++) {
               var attendee = exhibitor.toJSON();
               delete attendee.attendeesList;

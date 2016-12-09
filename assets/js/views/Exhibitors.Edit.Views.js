@@ -30,7 +30,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
             model: this.model
         }).render();
 
-        this.$el.find(".panel-body").append(this.form.el).append(submit);
+        this.$el.find(".panel-body").append(this.form.el).prepend(submit).append(submit);
         if (this.justUpdated) {
           this.justUpdated = false;
           this.$el.find("#collapse"+this.model.get("uuid")).addClass("in");
@@ -145,7 +145,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
         }).render();
 
         this.$el.find("#accountSettingsMain").append(this.form.el).append(submit);
-        this.$el.find('#c2_phone').mask('(000) 000-0000');
+        this.$el.find('input[name=phone]').mask('(000) 000-0000');
       },
 
       updateProfile: function(e) {

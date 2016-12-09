@@ -24,7 +24,7 @@ Exhibitors.module('Admin.Views', function(Views, App, Backbone, Marionette, $, _
       },
 
       fieldsChanged: function() {
-        console.log("updated");
+        //console.log("updated");
         this.justUpdated = true;
         this.render();
       },
