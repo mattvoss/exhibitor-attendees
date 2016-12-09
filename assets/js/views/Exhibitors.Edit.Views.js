@@ -42,6 +42,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
         this.$el.on('hide.bs.collapse', function () {
           $("i.fa-minus-circle", $(this)).removeClass('fa-minus-circle').addClass('fa-plus-circle');
         });
+        this.$el.find('input[name=phone]').mask('(000) 000-0000');
       },
 
       updateAttendee: function(e) {
@@ -145,7 +146,6 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
         }).render();
 
         this.$el.find("#accountSettingsMain").append(this.form.el).append(submit);
-        this.$el.find('input[name=phone]').mask('(000) 000-0000');
       },
 
       updateProfile: function(e) {
