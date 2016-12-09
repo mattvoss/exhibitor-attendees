@@ -23,7 +23,7 @@ module.exports = function(grunt) {
         'lib/spin.js/spin.js',
         'lib/ladda-bootstrap/ladda.js',
         'lib/moment/moment.js',
-        'lib/jQuery-Mask-Plugin/jquery.mask.min.js',
+        'lib/jQuery-Mask-Plugin/jquery.mask.js',
         'lib/placeholders/placeholders.js',
         'lib/messenger/messenger.js',
         'lib/messenger/messenger-theme-future.js'
