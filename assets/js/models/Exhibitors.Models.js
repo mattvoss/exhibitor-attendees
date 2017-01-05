@@ -22,6 +22,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
       zip: '',
       email: '',
       phone: '',
+      dietary: '',
       siteId: '',
       userId: 0,
       eventId: '',
@@ -71,6 +72,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
             }
         ]
       },
+      dietary:      { type: 'Text', editorClass: 'form-control' },
     },
 
     initialize: function() {

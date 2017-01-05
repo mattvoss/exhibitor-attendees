@@ -316,7 +316,8 @@ exports.initialize = function() {
       updated :             { type: Sequelize.DATE },
       siteId :              { type: Sequelize.STRING(10) },
       attend:               { type: Sequelize.BOOLEAN },
-      checked_in_time :     { type: Sequelize.DATE }
+      checked_in_time :     { type: Sequelize.DATE },
+      dietary :             { type: Sequelize.TEXT },
     });
 
     Sites = db.checkin.define('siteIds', {
@@ -715,7 +716,8 @@ exports.addAttendee = function(req, res) {
         'title',
         'organization',
         'siteId',
-        'created'
+        'created',
+        'dietary'
       ],
       results = {};
   Object.keys(req.body).forEach(function(key) {
@@ -760,7 +762,8 @@ exports.updateAttendee = function(req, res) {
         'phone',
         'title',
         'organization',
-        'siteId'
+        'siteId',
+        'dietary'
       ]
     ).then(function(attendee) {
       console.log(req.session);
@@ -817,6 +820,7 @@ exports.exportAttendees = function(req, res) {
             "  exhibitorAttendees.updated, " +
             "  exhibitorAttendees.attend, " +
             "  exhibitorAttendees.checked_in_time " +
+            "  exhibitorAttendees.dietary " +
             "FROM exhibitorAttendees " +
             "LEFT JOIN biller ON ( exhibitorAttendees.userId = biller.userId AND exhibitorAttendees.eventId = biller.eventId) " +
             "ORDER BY biller.id, exhibitorAttendees.lastname ASC ";
