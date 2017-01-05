@@ -72,7 +72,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
             }
         ]
       },
-      dietary:      { title: 'Please indicate if there is a dietary concern for this registrant that can result in injury', type: 'TextArea', editorClass: 'form-control' },
+      dietary:      { title: 'If there is a dietary concern for this registrant that can result in injury please list in detail', type: 'TextArea', editorClass: 'form-control' },
     },
 
     initialize: function() {
