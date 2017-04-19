@@ -46,8 +46,6 @@ exports.initialize = function() {
        args: ["-t", "-f", "noreply@regionvivpp.org"]
     });
 
-    console.log(opts.configs.get("redis"));
-
     db.registration = new Sequelize(
       opts.configs.get("mysql:registration:database"),
       opts.configs.get("mysql:registration:username"),
