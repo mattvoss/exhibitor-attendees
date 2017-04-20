@@ -8,7 +8,7 @@ var Converter = require("csvtojson").Converter,
     fields = [
       {key: 'First Name', value:'firstname'},
       {key: 'Last Name', value:'lastname'},
-      {key: 'Registration Date', value:'created'},
+      {key: 'Registration Date', value:'createdAt'},
       {key: 'Confirmation Number', value:'confirmation'},
       {key: 'Company', value:'organization'},
       {key: 'Email Address', value:'email'},

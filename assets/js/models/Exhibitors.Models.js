@@ -26,7 +26,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
       siteId: '',
       userId: 0,
       eventId: '',
-      created: Date.now()
+      createdAt: Date.now()
     },
 
     schema: {
@@ -77,7 +77,7 @@ Exhibitors.module('Models', function(Models, App, Backbone, Marionette, $, _) {
 
     initialize: function() {
       if (this.isNew()) {
-        this.set('created', Date.now());
+        this.set('createdAt', Date.now());
         this.set('uuid', generateQuickGuid());
       }
     }

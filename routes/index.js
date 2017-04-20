@@ -98,7 +98,7 @@ exports.initialize = function() {
       groupMemberId :       { type: Sequelize.INTEGER },
       event_id :            { type: Sequelize.STRING(36) },
       groupUserId :         { type: Sequelize.INTEGER },
-      created :             { type: Sequelize.DATE },
+      createdAt :             { type: Sequelize.DATE },
       confirmnum :          { type: Sequelize.STRING(100) },
       attend:               { type: Sequelize.BOOLEAN },
       discount_code_id :    { type: Sequelize.INTEGER },
@@ -108,7 +108,7 @@ exports.initialize = function() {
     RegGroupMembers = db.registration.define('exhib_dtregister_group_member', {
       groupMemberId :       { type: Sequelize.INTEGER, primaryKey: true },
       groupUserId :         { type: Sequelize.INTEGER },
-      created :             { type: Sequelize.DATE },
+      createdAt :             { type: Sequelize.DATE },
       confirmnum :          { type: Sequelize.STRING(100) },
       attend:               { type: Sequelize.BOOLEAN },
       discount_code_id :    { type: Sequelize.INTEGER },
@@ -310,8 +310,9 @@ exports.initialize = function() {
       phone :               { type: Sequelize.STRING(25) },
       title :               { type: Sequelize.STRING(255) },
       organization :        { type: Sequelize.STRING(255) },
-      created :             { type: Sequelize.DATE },
-      updated :             { type: Sequelize.DATE },
+      createdAt :             { type: Sequelize.DATE },
+      updatedAt :             { type: Sequelize.DATE },
+      deletedAt :             { type: Sequelize.DATE },
       siteId :              { type: Sequelize.STRING(10) },
       attend:               { type: Sequelize.BOOLEAN },
       checked_in_time :     { type: Sequelize.DATE },
@@ -345,8 +346,9 @@ exports.initialize = function() {
       phone :               { type: Sequelize.STRING(25) },
       title :               { type: Sequelize.STRING(255) },
       organization :        { type: Sequelize.STRING(255) },
-      created :             { type: Sequelize.DATE },
-      updated :             { type: Sequelize.DATE },
+      createdAt :             { type: Sequelize.DATE },
+      updatedAt :             { type: Sequelize.DATE },
+      deletedAt :             { type: Sequelize.DATE },
       siteId :              { type: Sequelize.STRING(10) }
     });
 
@@ -814,8 +816,9 @@ exports.exportAttendees = function(req, res) {
             "  exhibitorAttendees.organization, " +
             "  exhibitorAttendees.siteId, " +
             "  exhibitorAttendees.phone, " +
-            "  exhibitorAttendees.created, " +
-            "  exhibitorAttendees.updated, " +
+            "  exhibitorAttendees.createdAt, " +
+            "  exhibitorAttendees.updatedAt, " +
+            "  exhibitorAttendees.deletedAt, " +
             "  exhibitorAttendees.attend, " +
             "  exhibitorAttendees.checked_in_time " +
             "  exhibitorAttendees.dietary " +
