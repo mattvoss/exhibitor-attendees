@@ -439,6 +439,22 @@ exports.authUser = function(req, res) {
               ]
             }).then(
               function(exhibitors) {
+                user.exhibitors = [];
+                async.each(
+                  exhibitors,
+                  function(exhibitor, cb) {
+                    createExhibitorModel(
+                      exhibitor,
+                      function(ex) {
+                        user.exhibitors.push(ex);
+                        cb(null);
+                      }
+                    )
+                  },
+                  function(err) {
+                    sendBack(user);
+                  }
+                )
                 user.exhibitors = exhibitors;
                 sendBack(user);
               },
@@ -975,7 +991,7 @@ var createExhibitorModel = function(exhibitor, cb) {
    async.waterfall([
     function(callback) {
       getExhibitorAttendees(exhibitor, function(attendees) {
-        exhibitor.attendeesList = attendees;
+        exhibitor.attendeesList = (attendees) ? attendees : [];
         callback(null, exhibitor);
       });
     }
