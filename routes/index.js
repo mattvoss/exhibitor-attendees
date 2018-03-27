@@ -440,11 +440,11 @@ exports.authUser = function(req, res) {
             }).then(
               function(exhibitors) {
                 user.exhibitors = [];
-                async.each(
+                async.eachSeries(
                   exhibitors,
                   function(exhibitor, cb) {
                     createExhibitorModel(
-                      exhibitor,
+                      exhibitor.toJSON(),
                       function(ex) {
                         user.exhibitors.push(ex);
                         cb(null);
