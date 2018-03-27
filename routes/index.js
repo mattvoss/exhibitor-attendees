@@ -449,14 +449,12 @@ exports.authUser = function(req, res) {
                         user.exhibitors.push(ex);
                         cb(null);
                       }
-                    )
+                    );
                   },
                   function(err) {
                     sendBack(user);
                   }
-                )
-                user.exhibitors = exhibitors;
-                sendBack(user);
+                );
               },
               function(error) {
                 console.log(error);
