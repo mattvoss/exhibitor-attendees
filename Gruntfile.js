@@ -2,40 +2,40 @@ module.exports = function(grunt) {
   // Load Grunt tasks declared in the package.json file
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
   var js = [
-        'lib/jquery/jquery.js',
-        'lib/handlebars/handlebars.js',
-        'lib/swag/swag.js',
-        'lib/underscore/underscore.js',
-        'lib/bootstrap/bootstrap.js',
-        'lib/bootstrap-jasny/jasny-bootstrap.js',
-        'lib/backbone/backbone.js',
-        'lib/backbone.wreqr/backbone.wreqr.js',
-        'lib/backbone.babysitter/backbone.babysitter.js',
-        'lib/backbone.supermodel/backbone.supermodel.js',
-        'lib/marionette/backbone.marionette.js',
-        'lib/backbone.marionette.handlebars/backbone.marionette.handlebars.js',
-        'lib/backbone-forms/backbone-forms.js',
+        'bower_components/jquery/jquery.js',
+        'bower_components/handlebars/handlebars.js',
+        'bower_components/swag/swag.js',
+        'bower_components/underscore/underscore.js',
+        'bower_components/bootstrap/bootstrap.js',
+        'bower_components/bootstrap-jasny/jasny-bootstrap.js',
+        'bower_components/backbone/backbone.js',
+        'bower_components/backbone.wreqr/backbone.wreqr.js',
+        'bower_components/backbone.babysitter/backbone.babysitter.js',
+        'bower_components/backbone.supermodel/backbone.supermodel.js',
+        'bower_components/marionette/backbone.marionette.js',
+        'bower_components/backbone.marionette.handlebars/backbone.marionette.handlebars.js',
+        'bower_components/backbone-forms/backbone-forms.js',
         'bower_components/backbone-forms/distribution/editors/list.js',
         'bower_components/backbone-forms/distribution/templates/bootstrap.js',
-        'lib/microplugin/microplugin.js',
-        'lib/sifter/sifter.js',
-        'lib/selectize/selectize.js',
-        'lib/spin.js/spin.js',
-        'lib/ladda-bootstrap/ladda.js',
-        'lib/moment/moment.js',
-        'lib/jQuery-Mask-Plugin/jquery.mask.js',
-        'lib/placeholders/placeholders.js',
-        'lib/messenger/messenger.js',
-        'lib/messenger/messenger-theme-future.js'
+        'bower_components/microplugin/microplugin.js',
+        'bower_components/sifter/sifter.js',
+        'bower_components/selectize/selectize.js',
+        'bower_components/spin.js/spin.js',
+        'bower_components/ladda-bootstrap/ladda.js',
+        'bower_components/moment/moment.js',
+        'bower_components/jQuery-Mask-Plugin/jquery.mask.js',
+        'bower_components/placeholders/placeholders.js',
+        'bower_components/messenger/messenger.js',
+        'bower_components/messenger/messenger-theme-future.js'
       ],
       css = [
-        'lib/bootstrap/bootstrap.css',
-        'lib/bootstrap-jasny/jasny-bootstrap.css',
-        'lib/font-awesome/font-awesome.css',
-        'lib/selectize/selectize.css',
-        'lib/ladda-bootstrap/ladda-themeless.css',
-        'lib/messenger/messenger.css',
-        'lib/messenger/messenger-theme-future.css',
+        'bower_components/bootstrap/bootstrap.css',
+        'bower_components/bootstrap-jasny/jasny-bootstrap.css',
+        'bower_components/font-awesome/font-awesome.css',
+        'bower_components/selectize/selectize.css',
+        'bower_components/ladda-bootstrap/ladda-themeless.css',
+        'bower_components/messenger/messenger.css',
+        'bower_components/messenger/messenger-theme-future.css',
         'assets/css/custom.css'
       ];
 
@@ -117,11 +117,11 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'lib/bootstrap/*.svg',
-              'lib/bootstrap/*.eot',
-              'lib/bootstrap/*.ttf',
-              'lib/bootstrap/*.woff',
-              'lib/font-awesome/*',
+              'bower_components/bootstrap/*.svg',
+              'bower_components/bootstrap/*.eot',
+              'bower_components/bootstrap/*.ttf',
+              'bower_components/bootstrap/*.woff',
+              'bower_components/font-awesome/*',
             ],
             dest: 'public/fonts/',
             filter: 'isFile'
@@ -130,7 +130,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'lib/leaflet/dist/*.css'
+              'bower_components/leaflet/dist/*.css'
             ],
             dest: 'public/css/',
             filter: 'isFile'
@@ -139,7 +139,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'lib/leaflet/dist/images/*.*'
+              'bower_components/leaflet/dist/images/*.*'
             ],
             dest: 'public/images/',
             filter: 'isFile'
@@ -148,7 +148,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'lib/cartodb.js/themes/img/*.*'
+              'bower_components/cartodb.js/themes/img/*.*'
             ],
             dest: 'public/images/',
             filter: 'isFile'
@@ -158,7 +158,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'lib/font-awesome/*.css'
+              'bower_components/font-awesome/*.css'
             ],
             dest: 'public/css/',
             filter: 'isFile'
@@ -167,7 +167,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'lib/cartodb.js/dist/*.css'
+              'bower_components/cartodb.js/dist/*.css'
             ],
             dest: 'public/css/',
             filter: 'isFile'
@@ -176,7 +176,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'lib/ion.rangeSlider/img/*.png'
+              'bower_components/ion.rangeSlider/img/*.png'
             ],
             dest: 'public/images/',
             filter: 'isFile'
