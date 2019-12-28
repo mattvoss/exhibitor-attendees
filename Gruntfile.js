@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         'bower_components/handlebars/handlebars.js',
         'bower_components/swag/lib/swag.js',
         'bower_components/underscore/underscore.js',
-        'bower_components/bootstrap/dist/bootstrap.js',
+        'bower_components/bootstrap/dist/js/bootstrap.js',
         'bower_components/bootstrap-jasny/dist/js/jasny-bootstrap.js',
         'bower_components/backbone/backbone.js',
         'bower_components/backbone.wreqr/lib/backbone.wreqr.js',
