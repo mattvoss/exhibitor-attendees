@@ -29,7 +29,6 @@ module.exports = function(grunt) {
         'bower_components/messenger/build/js/messenger-theme-future.js'
       ],
       css = [
-        'bower_components/bootstrap/dist/css/bootstrap.css',
         'bower_components/bootstrap-jasny/dist/css/jasny-bootstrap.css',
         'bower_components/font-awesome/css/font-awesome.css',
         'bower_components/selectize/dist/selectize.css',
