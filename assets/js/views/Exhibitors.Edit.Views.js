@@ -38,11 +38,11 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
         this.$el.on('show.bs.collapse', function () {
           $("i.fa-plus-circle", $(this)).removeClass('fa-plus-circle').addClass('fa-minus-circle');
           $('html,body').animate({'scrollTop':$('.fa-minus-circle').position().top},500);
-          this.$el.find("#collapse"+this.model.get("uuid")).removeClass('hide').addClass("show");
+          $("#collapse"+this.model.get("uuid")).removeClass('hide').addClass("show");
         });
         this.$el.on('hide.bs.collapse', function () {
           $("i.fa-minus-circle", $(this)).removeClass('fa-minus-circle').addClass('fa-plus-circle');
-          this.$el.find("#collapse"+this.model.get("uuid")).removeClass('show').addClass("hide");
+          $("#collapse"+this.model.get("uuid")).removeClass('show').addClass("hide");
         });
         this.$el.find('input[name=phone]').mask('(000) 000-0000');
       },
