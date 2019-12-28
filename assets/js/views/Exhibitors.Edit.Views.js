@@ -5,7 +5,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
 
   Views.AttendeeFormView = Marionette.ItemView.extend({
       template: Templates.attendeesForm,
-      className: "card-body default",
+      className: "card",
       events: {
         "click .update"   : "updateAttendee"
       },
