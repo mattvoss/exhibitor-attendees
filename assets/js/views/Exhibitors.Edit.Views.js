@@ -5,7 +5,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
 
   Views.AttendeeFormView = Marionette.ItemView.extend({
       template: Templates.attendeesForm,
-      className: "panel panel-default",
+      className: "card-body default",
       events: {
         "click .update"   : "updateAttendee"
       },
@@ -30,7 +30,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
             model: this.model
         }).render();
 
-        this.$el.find(".panel-body").append(this.form.el).prepend(submit).append(submit);
+        this.$el.find(".card-body").append(this.form.el).prepend(submit).append(submit);
         if (this.justUpdated) {
           this.justUpdated = false;
           this.$el.find("#collapse"+this.model.get("uuid")).addClass("in");
