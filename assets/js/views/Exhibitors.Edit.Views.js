@@ -33,7 +33,7 @@ Exhibitors.module('Edit.Views', function(Views, App, Backbone, Marionette, $, _)
         this.$el.find(".card-body").append(this.form.el).prepend(submit).append(submit);
         if (this.justUpdated) {
           this.justUpdated = false;
-          this.$el.find("#collapse"+this.model.get("uuid")).addClass("in");
+          // this.$el.find("#collapse"+this.model.get("uuid")).addClass("in");
         }
         this.$el.on('show.bs.collapse', function () {
           $("i.fa-plus-circle", $(this)).removeClass('fa-plus-circle').addClass('fa-minus-circle');
