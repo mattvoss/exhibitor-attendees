@@ -36,6 +36,7 @@ module.exports = function(grunt) {
         'bower_components/ladda-bootstrap/dist/ladda-themeless.css',
         'bower_components/messenger/build/css/messenger.css',
         'bower_components/messenger/build/css/messenger-theme-future.css',
+        'assets/css/bootstrap.min.css',
         'assets/css/custom.css'
       ];
 
